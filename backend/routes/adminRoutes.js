@@ -1,6 +1,7 @@
 import express from "express";
 import { adminModel } from "../models/adminModel.js";
 
+
 const router = express.Router();
 router.post('/create', async (request,response)=>{
     try {

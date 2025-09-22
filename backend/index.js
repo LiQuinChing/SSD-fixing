@@ -17,7 +17,7 @@ import nodemailer from 'nodemailer';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
 import { PORT, mongoDBURL } from './config.js';
-import chatRoutes from './routes/chatRoutes.js';
+import chatRoutes from './Routes/chatRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import vehicleRoutes from './routes/vehicleRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -195,7 +195,7 @@ app.post('/licenses', upload.single('uploadLicense'), async (req, res) => {
             email: req.body.email,
             notes: req.body.notes
         });
-        res.status(201).send(newLicense);
+        res.status(201).json(newLicense); // Solved XSS vulnerability
     } catch (error) {
         console.error('Error when adding insurance:', error);
         res.status(500).send({ message: 'Failed to add insurance', error: error.message || error });
@@ -250,7 +250,7 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res) => {
             uploadInsurance: req.file ? req.file.path : null, // Assuming file is optional
             email: req.body.email,
         });
-        res.status(201).send(newInsurance);
+        res.status(201).json(newInsurance); // Solved XSS vulnerability
     } catch (error) {
         console.error('Error when adding insurance:', error);
         res.status(500).send({ message: 'Failed to add insurance', error: error.message || error });
@@ -260,7 +260,7 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res) => {
 app.get('/insurances', async (req, res) => {
     try {
         const insurances = await InsuranceRepository.getAllInsurances();
-        res.send(insurances);
+        res.json(insurances); // Solved XSS vulnerability
     } catch (error) {
         res.status(500).send({ message: 'Failed to fetch insurances', error });
         res.status(500).send({ message: 'Failed to add insurance', error: error.message || error });
@@ -270,7 +270,7 @@ app.get('/insurances', async (req, res) => {
 app.put('/insurances/:id', async (req, res) => {
     try {
         const updatedInsurance = await InsuranceRepository.updateInsurance(req.params.id, req.body);
-        res.send(updatedInsurance);
+        res.json(updatedInsurance); // Solved XSS vulnerability
     } catch (error) {
         res.status(500).send({ message: 'Failed to update insurance', error });
         res.status(500).send({ message: 'Failed to add insurance', error: error.message || error });
@@ -280,7 +280,7 @@ app.put('/insurances/:id', async (req, res) => {
 app.delete('/insurances/:id', async (req, res) => {
     try {
         const deletedInsurance = await InsuranceRepository.deleteInsurance(req.params.id);
-        res.send(deletedInsurance);
+        res.json(deletedInsurance); // Solved XSS vulnerability
     } catch (error) {
         res.status(500).send({ message: 'Failed to delete insurance', error });
         res.status(500).send({ message: 'Failed to add insurance', error: error.message || error });

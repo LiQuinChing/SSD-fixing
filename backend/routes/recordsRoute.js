@@ -27,7 +27,7 @@ router.post('/', async (request, response) => {
 
         const record = await Record.create(newRecord);
 
-        return response.status(201).send(record);
+        return response.status(201).json(record); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

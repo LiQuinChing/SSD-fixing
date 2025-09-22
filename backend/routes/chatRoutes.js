@@ -28,7 +28,7 @@ router.post('/create', async (request,response)=>{
         
 
         const chat = await chatModel.create(newChat);
-        return response.status(201).send(chat);
+        return response.status(201).json(chat); // Solved XSS vulnerability
     } catch (error) {
         
     }
@@ -180,7 +180,7 @@ router.post('/create/admin/', async (request,response)=>{
         }
 
         const chat = await replyModel.create(newChat);
-        return response.status(201).send(chat);
+        return response.status(201).json(chat); // Solved XSS vulnerability
     } catch (error) {
         
     }

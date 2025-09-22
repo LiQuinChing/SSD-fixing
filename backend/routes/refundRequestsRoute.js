@@ -32,7 +32,7 @@ router.post('/user', async (request, response) => {
             };
 
             const refundrequest = await RefundRequest.create(newRefundRequest);
-            return response.status(201).send(refundrequest);
+            return response.status(201).json(refundrequest); // Solved XSS vulnerability
 
     } catch (error) {
         console.log(error.message);

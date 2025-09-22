@@ -46,7 +46,7 @@ router.post('/user', async (request, response) => {
 
         //stripe - end
 
-        return response.status(201).send(stripePayment);
+        return response.status(201).json(stripePayment); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

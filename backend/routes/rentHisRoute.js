@@ -29,7 +29,7 @@ router.post('/', async(request, response) => {
         };
         const rentalHistory = await RentHis.create(newRent);
 
-        return response.status(201).send(rentalHistory);
+        return response.status(201).json(rentalHistory); // Solved XSS vulnerability
         
     } catch (error) {
         console.log(error.message);

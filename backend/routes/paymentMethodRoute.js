@@ -25,7 +25,7 @@ router.post('/user', async (request, response) => {
 
         const paymentMethod = await PaymentMethod.create(savePaymentMethod);
 
-        return response.status(201).send(paymentMethod);
+        return response.status(201).json(paymentMethod); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

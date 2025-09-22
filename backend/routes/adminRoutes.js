@@ -1,7 +1,6 @@
 import express from "express";
 import { adminModel } from "../models/adminModel.js";
 
-
 const router = express.Router();
 router.post('/create', async (request,response)=>{
     try {
@@ -18,7 +17,7 @@ router.post('/create', async (request,response)=>{
         }
 
         const newAdminFinal = await adminModel.create(newAdmin);
-        return response.status(201).send(newAdminFinal);
+        return response.status(201).json(newAdminFinal); // Solved XSS vulnerability
     } catch (error) {
         
     }

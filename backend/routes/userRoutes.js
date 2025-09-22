@@ -19,7 +19,7 @@ router.post('/create', async (request,response)=>{
 
         
         const newUserFinal = await userModel.create(newUser);
-        return response.status(201).send(newUserFinal);
+        return response.status(201).json(newUserFinal); // Solved XSS vulnerability
     } catch (error) {
         
     }

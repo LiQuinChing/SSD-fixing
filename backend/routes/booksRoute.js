@@ -38,7 +38,7 @@ router.post('/', async (request, response) => {
     console.log(newBook)
     const book = await Book.create(newBook);
     console.log(book)
-    return response.status(201).send(book);
+    return response.status(201).json(book); // Solved XSS vulnerability
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });

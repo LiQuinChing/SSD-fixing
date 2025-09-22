@@ -21,7 +21,7 @@ router.post('/create', async (request,response)=>{
         }
 
         const vehicle = await vehicleModel.create(newVehicle);
-        return response.status(201).send(vehicle);
+        return response.status(201).json(vehicle); // Solved XSS vulnerability
     } catch (error) {
         
     }

@@ -39,7 +39,7 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = (process.env.FRONTEND_ORIGINS || 'http://localhost:5173')
+const allowedOrigins = (process.env.FRONTEND_ORIGINS)
     .split(',')
     .map(s => s.replace(/\/$/, '').trim());
 

@@ -17,7 +17,7 @@ export const signup = async (req, res, next) => {
     });
 
     // Assign JWT (json web token) to user
-    const token = jwt.sign({ _id: newUser._id }, "secretkey123", {
+    const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: '90d',
     });
     res.status(201).json({
@@ -46,7 +46,7 @@ const isPasswordValid = await bcrypt.compare(password, user.password);
  if (!isPasswordValid) {
       return next(new createError("Invalid email or password!", 401));
     }
-    const token = jwt.sign({ _id: user._id }, "secretkey123", {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '90d',
     });
     

@@ -29,7 +29,7 @@ import InsuranceRepository from './controllers/InsuranceRepository.js';
 import recordsRoute from './routes/recordsRoute.js'
 
 // const carRoutes = require('./routes/carRoute');
-import carRoutes from './Routes/carRoute.js'
+import carRoutes from './routes/carRoute.js'
 
 import booksRoute from './routes/booksRoute.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
@@ -83,20 +83,43 @@ app.use((req, res, next) => {
     next();
 });
 
-const allowedOrigins = (process.env.FRONTEND_ORIGINS || 'http://localhost:5173')
+// const allowedOrigins = (process.env.FRONTEND_ORIGINS || 'http://localhost:5173')
+//     .split(',')
+//     .map(s => s.replace(/\/$/, '').trim());
+
+const defaultOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',  // Added for React dev server
+    'http://127.0.0.1:3000',  // Added for React dev server
+];
+
+const envOrigins = (process.env.FRONTEND_ORIGINS || '')
     .split(',')
-    .map(s => s.replace(/\/$/, '').trim());
+    .map(s => s.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
 app.use(cors({
     origin(origin, cb) {
-        // allow non-browser requests or same-origin (no Origin header)
+        // Allow non-browser requests or same-origin (no Origin header)
         if (!origin) return cb(null, true);
-        if (allowedOrigins.includes(origin)) return cb(null, true);
+        // Normalize incoming origin (strip trailing slash)
+        const normalized = origin.replace(/\/$/, '');
+
+        if (allowedOrigins.includes(normalized)) {
+            return cb(null, true);
+        }
+        // Debug while testing
+        console.warn('CORS blocked origin:', normalized, 'Allowed:', allowedOrigins);
         return cb(new Error('Not allowed by CORS'));
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true, // set true only if you use cookies/auth across origins
+    optionsSuccessStatus: 200, // For legacy browser support
+    preflightContinue: false,
 }));
 
 // app.use(cors({
@@ -105,6 +128,25 @@ app.use(cors({
 //     allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
+// Security headers specifically for Google OAuth
+app.use((req, res, next) => {
+    // Essential for Google OAuth popup/redirect flow
+    res.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+
+    // Additional security headers that don't interfere with OAuth
+    res.header('X-Content-Type-Options', 'nosniff');
+    res.header('X-Frame-Options', 'DENY');
+    res.header('X-XSS-Protection', '1; mode=block');
+
+    // Referrer policy that works with OAuth
+    res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+    next();
+});
+
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 // Multer configuration for file uploads
 const storage = multer.diskStorage({

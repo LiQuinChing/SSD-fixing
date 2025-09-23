@@ -1,6 +1,8 @@
 import React from "react";
 
-import { Routes, Route } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Create from "./ChatPages/Create.jsx";
 import Chats from "./ChatPages/Chats.jsx";
 import Delete from "./ChatPages/Delete.jsx";
@@ -108,212 +110,222 @@ import FirstPageF from "../src/pages/FirstPage";
 import AddFeedbackUser from "../src/pages/AddFeedbackUser";
 // import Layout from './components/layouts/Layout';
 
-import AHome from '../src/pages/bookingAdmin/Home.jsx';
-import ACreateBook from '../src/pages/bookingAdmin/CreateBooks.jsx';
-import AShowBook from '../src/pages/bookingAdmin/ShowBook.jsx';
-import AEditBook from '../src/pages/bookingAdmin/EditBook.jsx';
-import ADeleteBook from '../src/pages/bookingAdmin/DeleteBook.jsx';
+import AHome from "../src/pages/bookingAdmin/Home.jsx";
+import ACreateBook from "../src/pages/bookingAdmin/CreateBooks.jsx";
+import AShowBook from "../src/pages/bookingAdmin/ShowBook.jsx";
+import AEditBook from "../src/pages/bookingAdmin/EditBook.jsx";
+import ADeleteBook from "../src/pages/bookingAdmin/DeleteBook.jsx";
 
+// Get Google Client ID from environment variables
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App = () => {
   const { isAuthenticated, userData } = useAuth();
-  return (
-    <Layout>
-      <Routes>
-        <Route path="/home" element={<Homee />} />{" "}
-        {/* this has the signup and signin buttons */}
-        <Route path="/chat/create" element={<Create />} />{" "}
-        {/* this has the issue creating form */}
-        <Route
-          path="/chat/chats"
-          element={
-            !isAuthenticated ? (
-              <Register />
-            ) : userData.role === "admin" ? (
-              <Navigate to="/chat/chats/admin" />
-            ) : (
-              <Chats />
-            )
-          }
-        />{" "}
-        {/* this has all the chats */}
-        <Route path="/chat/delete/:id" element={<Delete />} />{" "}
-        {/* this has the confirm message to delete an issue */}
-        <Route path="/chat/getchat/:id" element={<AChat />} />{" "}
-        {/* this is an in detailed page of an issue */}
-        <Route path="/chat/edit/:id" element={<Edit />} />{" "}
-        {/* this has the form to edit details of an issue */}
-        <Route path="/chat/chats/admin" element={<ChatsForAdmin />} />{" "}
-        {/* this has all the chats to view as an admin */}
-        <Route
-          path="/chat/getchat/:id/admin"
-          element={<AChatForAdmin />}
-        />{" "}
-        {/* this is an in detailed page of an issue for an admin */}
-        <Route
-          path="/chat/create/admin/:id"
-          element={<CreateForAdmin />}
-        />{" "}
-        {/* this has the form to reply as an admin */}
-        <Route path="/user/create" element={<ChatUser />} />{" "}
-        {/* this has the signup form */}
-        <Route path="/user/signin" element={<ChatUserLogin />} />{" "}
-        {/* this has the sign in form */}
-        <Route path="/vehicle/vehiclecreate" element={<CreateVehicle />} />{" "}
-        {/* this has the form to create a vehicle */}
-        <Route path="/admin/create" element={<ChatAdmin />} />{" "}
-        {/*this has the form to create an admin */}
-        <Route path="/home/admin" element={<HomeAdmin />} />{" "}
-        {/*this has the sign up and sign in buttons*/}
-        <Route path="/admin/signin" element={<ChatAdminLogin />} />{" "}
-        {/*this has the sign in form for admins admin */}
-        <Route path="/rentHome" element={<HomeRentHisPage />} />
-        <Route path="/rents/createHis" element={<CreateRentHisPage />} />
-        <Route path="/rents/detailsHis/:id" element={<ShowRentHisPage />} />
-        <Route path="rents/editHis/:id" element={<EditRentHisPage />} />
-        <Route path="rents/deleteHis/:id" element={<DeleteRentHisPage />} />
-        <Route path="/userRents" element={<HomeUserRentHisPage />} />
-        <Route path="/user" element={<Payments_ClientView />} />
-        <Route path="/admin" element={<Payments_AdminView />} />
-        <Route path="/method" element={<ChoosePaymentOption />} />
-        <Route
-          path="/cardpayments/user/create"
-          element={<CreateCardPayment />}
-        />
-        <Route
-          path="/cashpayments/user/create"
-          element={<CreateCashPayment />}
-        />
-        <Route
-          path="/stripepayments/user/create"
-          element={<CreateStripePayment />}
-        />
-        <Route
-          path="/savepaymentmethod/user/create"
-          element={<SavePaymentMethod />}
-        />
-        <Route
-          path="/refundrequests/user/create"
-          element={<CreateRequestRefund />}
-        />
-        <Route
-          path="/cardpayments/user/details/:id"
-          element={<ShowCardPayment />}
-        />
-        <Route
-          path="/cashpayments/user/details/:id"
-          element={<ShowCashPayment />}
-        />
-        <Route
-          path="/stripepayments/user/details/:id"
-          element={<ShowStripePayment />}
-        />
-        <Route
-          path="/savepaymentmethod/user/details/:id"
-          element={<ShowPaymentMethod />}
-        />
-        <Route
-          path="/refundrequests/admin/details/:id"
-          element={<ShowRefundRequest />}
-        />
-        <Route
-          path="/cashpayments/admin/edit/:id"
-          element={<EditCashPayment />}
-        />
-        <Route
-          path="/savepaymentmethod/user/edit/:id"
-          element={<EditPaymentMethod />}
-        />
-        <Route
-          path="/refundrequests/admin/edit/:id"
-          element={<UpdateRefundRequest />}
-        />
-        <Route
-          path="/savepaymentmethod/user/delete/:id"
-          element={<DeletePaymentMethod />}
-        />
-        <Route path="/insuranceform" element={<InsuranceForm />} />
-        <Route path="/licensedashboard" element={<LicenseDashboard />} />
-        <Route path="/licenseform" element={<LicenseForm />} />
-        <Route path="/addlicense" element={<AddLicense />} />
-        <Route path="/addinsurance" element={<AddInsurance />} />
-        <Route path="/insurancedashboard" element={<InsuranceDashboard />} />
-        <Route
-          path="/signup"
-          element={
-            !isAuthenticated ? (
-              <Register />
-            ) : userData.role === "admin" ? (
-              <Navigate to="/AdminDashboard" />
-            ) : (
-              <Navigate to="/profile" />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            !isAuthenticated ? (
-              <Login />
-            ) : userData.role === "admin" ? (
-              <Navigate to="/AdminDashboard" />
-            ) : (
-              <Navigate to="/profile" />
-            )
-          }
-        />
-        <Route
-          path="/profile"
-          element={isAuthenticated ? <Dashboard /> : <Login />}
-        />
-        <Route
-          path="/AdminDashboard"
-          element={
-            isAuthenticated && userData.role === "admin" ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />
-        <Route path="/recordHome" element={<Home />} />
-        <Route path="/records/create" element={<CreateRecord />} />
-        <Route path="/records/details/:id" element={<ShowRecord />} />
-        <Route path="/records/edit/:id" element={<EditRecord />} />
-        <Route path="/records/delete/:id" element={<DeleteRecord />} />
-        <Route path="/offers" element={<FirstPage />} />
-        <Route path="/offers/home" element={<OfferHome />} />
-        <Route path="/offers/show/:id" element={<ShowOffers />} />
-        <Route path="/offers/add" element={<AddOffer />} />
-        <Route path="/offers/edit/:id" element={<EditOffers />} />
-        <Route path="/offers/delete/:id" element={<DeleteOffers />} />
-        <Route path="/onboarding" element={<OnBoarding />} />
-        <Route path="/rent-request" element={<RentRequest />} />
-        <Route path="/request-management" element={<RequestManagement />} />
-        <Route path="/vehicle-details" element={<VehicleDetails />} />
-        <Route path="/bookshome" element={<HomeBooking />} />
-        <Route path="/" element={<Mainhome />} />
-        <Route path="/books/create" element={<CreateBook />} />
-        <Route path="/books/details/:id" element={<ShowBook />} />
-        <Route path="/books/edit/:id" element={<EditBook />} />
-        <Route path="/books/delete/:id" element={<DeleteBook />} />
-        <Route path="/feedbacks" element={<FirstPageF />} />
-        <Route path="/feedbacks/home" element={<HomeFeeback />} />
-        <Route path="/feedbacks/show/:id" element={<ShowFeedback />} />
-        <Route path="/feedbacks/add" element={<AddFeedback />} />{" "}
-        {/* admin adding feedback */}
-        <Route path="/feedbacks/edit/:id" element={<EditFeedback />} />
-        <Route path="/feedbacks/delete/:id" element={<DeleteFeedback />} />
-        <Route path="/feedbacks/addUser/" element={<AddFeedbackUser />} />
 
-        {/* Admin */}
-        <Route path='/a' element={<AHome />} />
-      <Route path='/abooks/create' element={<ACreateBook />} />
-      <Route path='/abooks/details/:id' element={<AShowBook />} />
-      <Route path='/abooks/edit/:id' element={<AEditBook />} />
-      <Route path='/abooks/delete/:id' element={<ADeleteBook />} />
-      </Routes>
-    </Layout>
+  if (!GOOGLE_CLIENT_ID) {
+    console.error("VITE_GOOGLE_CLIENT_ID is not set in environment variables");
+  }
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Layout>
+        <Routes>
+          <Route path="/home" element={<Homee />} />{" "}
+          {/* this has the signup and signin buttons */}
+          <Route path="/chat/create" element={<Create />} />{" "}
+          {/* this has the issue creating form */}
+          <Route
+            path="/chat/chats"
+            element={
+              !isAuthenticated ? (
+                <Register />
+              ) : userData.role === "admin" ? (
+                <Navigate to="/chat/chats/admin" />
+              ) : (
+                <Chats />
+              )
+            }
+          />{" "}
+          {/* this has all the chats */}
+          <Route path="/chat/delete/:id" element={<Delete />} />{" "}
+          {/* this has the confirm message to delete an issue */}
+          <Route path="/chat/getchat/:id" element={<AChat />} />{" "}
+          {/* this is an in detailed page of an issue */}
+          <Route path="/chat/edit/:id" element={<Edit />} />{" "}
+          {/* this has the form to edit details of an issue */}
+          <Route path="/chat/chats/admin" element={<ChatsForAdmin />} />{" "}
+          {/* this has all the chats to view as an admin */}
+          <Route
+            path="/chat/getchat/:id/admin"
+            element={<AChatForAdmin />}
+          />{" "}
+          {/* this is an in detailed page of an issue for an admin */}
+          <Route
+            path="/chat/create/admin/:id"
+            element={<CreateForAdmin />}
+          />{" "}
+          {/* this has the form to reply as an admin */}
+          <Route path="/user/create" element={<ChatUser />} />{" "}
+          {/* this has the signup form */}
+          <Route path="/user/signin" element={<ChatUserLogin />} />{" "}
+          {/* this has the sign in form */}
+          <Route
+            path="/vehicle/vehiclecreate"
+            element={<CreateVehicle />}
+          />{" "}
+          {/* this has the form to create a vehicle */}
+          <Route path="/admin/create" element={<ChatAdmin />} />{" "}
+          {/*this has the form to create an admin */}
+          <Route path="/home/admin" element={<HomeAdmin />} />{" "}
+          {/*this has the sign up and sign in buttons*/}
+          <Route path="/admin/signin" element={<ChatAdminLogin />} />{" "}
+          {/*this has the sign in form for admins admin */}
+          <Route path="/rentHome" element={<HomeRentHisPage />} />
+          <Route path="/rents/createHis" element={<CreateRentHisPage />} />
+          <Route path="/rents/detailsHis/:id" element={<ShowRentHisPage />} />
+          <Route path="rents/editHis/:id" element={<EditRentHisPage />} />
+          <Route path="rents/deleteHis/:id" element={<DeleteRentHisPage />} />
+          <Route path="/userRents" element={<HomeUserRentHisPage />} />
+          <Route path="/user" element={<Payments_ClientView />} />
+          <Route path="/admin" element={<Payments_AdminView />} />
+          <Route path="/method" element={<ChoosePaymentOption />} />
+          <Route
+            path="/cardpayments/user/create"
+            element={<CreateCardPayment />}
+          />
+          <Route
+            path="/cashpayments/user/create"
+            element={<CreateCashPayment />}
+          />
+          <Route
+            path="/stripepayments/user/create"
+            element={<CreateStripePayment />}
+          />
+          <Route
+            path="/savepaymentmethod/user/create"
+            element={<SavePaymentMethod />}
+          />
+          <Route
+            path="/refundrequests/user/create"
+            element={<CreateRequestRefund />}
+          />
+          <Route
+            path="/cardpayments/user/details/:id"
+            element={<ShowCardPayment />}
+          />
+          <Route
+            path="/cashpayments/user/details/:id"
+            element={<ShowCashPayment />}
+          />
+          <Route
+            path="/stripepayments/user/details/:id"
+            element={<ShowStripePayment />}
+          />
+          <Route
+            path="/savepaymentmethod/user/details/:id"
+            element={<ShowPaymentMethod />}
+          />
+          <Route
+            path="/refundrequests/admin/details/:id"
+            element={<ShowRefundRequest />}
+          />
+          <Route
+            path="/cashpayments/admin/edit/:id"
+            element={<EditCashPayment />}
+          />
+          <Route
+            path="/savepaymentmethod/user/edit/:id"
+            element={<EditPaymentMethod />}
+          />
+          <Route
+            path="/refundrequests/admin/edit/:id"
+            element={<UpdateRefundRequest />}
+          />
+          <Route
+            path="/savepaymentmethod/user/delete/:id"
+            element={<DeletePaymentMethod />}
+          />
+          <Route path="/insuranceform" element={<InsuranceForm />} />
+          <Route path="/licensedashboard" element={<LicenseDashboard />} />
+          <Route path="/licenseform" element={<LicenseForm />} />
+          <Route path="/addlicense" element={<AddLicense />} />
+          <Route path="/addinsurance" element={<AddInsurance />} />
+          <Route path="/insurancedashboard" element={<InsuranceDashboard />} />
+          <Route
+            path="/signup"
+            element={
+              !isAuthenticated ? (
+                <Register />
+              ) : userData.role === "admin" ? (
+                <Navigate to="/AdminDashboard" />
+              ) : (
+                <Navigate to="/profile" />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              !isAuthenticated ? (
+                <Login />
+              ) : userData.role === "admin" ? (
+                <Navigate to="/AdminDashboard" />
+              ) : (
+                <Navigate to="/profile" />
+              )
+            }
+          />
+          <Route
+            path="/profile"
+            element={isAuthenticated ? <Dashboard /> : <Login />}
+          />
+          <Route
+            path="/AdminDashboard"
+            element={
+              isAuthenticated && userData.role === "admin" ? (
+                <AdminDashboard />
+              ) : (
+                <Navigate to="/Login" />
+              )
+            }
+          />
+          <Route path="/recordHome" element={<Home />} />
+          <Route path="/records/create" element={<CreateRecord />} />
+          <Route path="/records/details/:id" element={<ShowRecord />} />
+          <Route path="/records/edit/:id" element={<EditRecord />} />
+          <Route path="/records/delete/:id" element={<DeleteRecord />} />
+          <Route path="/offers" element={<FirstPage />} />
+          <Route path="/offers/home" element={<OfferHome />} />
+          <Route path="/offers/show/:id" element={<ShowOffers />} />
+          <Route path="/offers/add" element={<AddOffer />} />
+          <Route path="/offers/edit/:id" element={<EditOffers />} />
+          <Route path="/offers/delete/:id" element={<DeleteOffers />} />
+          <Route path="/onboarding" element={<OnBoarding />} />
+          <Route path="/rent-request" element={<RentRequest />} />
+          <Route path="/request-management" element={<RequestManagement />} />
+          <Route path="/vehicle-details" element={<VehicleDetails />} />
+          <Route path="/bookshome" element={<HomeBooking />} />
+          <Route path="/" element={<Mainhome />} />
+          <Route path="/books/create" element={<CreateBook />} />
+          <Route path="/books/details/:id" element={<ShowBook />} />
+          <Route path="/books/edit/:id" element={<EditBook />} />
+          <Route path="/books/delete/:id" element={<DeleteBook />} />
+          <Route path="/feedbacks" element={<FirstPageF />} />
+          <Route path="/feedbacks/home" element={<HomeFeeback />} />
+          <Route path="/feedbacks/show/:id" element={<ShowFeedback />} />
+          <Route path="/feedbacks/add" element={<AddFeedback />} />{" "}
+          {/* admin adding feedback */}
+          <Route path="/feedbacks/edit/:id" element={<EditFeedback />} />
+          <Route path="/feedbacks/delete/:id" element={<DeleteFeedback />} />
+          <Route path="/feedbacks/addUser/" element={<AddFeedbackUser />} />
+          {/* Admin */}
+          <Route path="/a" element={<AHome />} />
+          <Route path="/abooks/create" element={<ACreateBook />} />
+          <Route path="/abooks/details/:id" element={<AShowBook />} />
+          <Route path="/abooks/edit/:id" element={<AEditBook />} />
+          <Route path="/abooks/delete/:id" element={<ADeleteBook />} />
+        </Routes>
+      </Layout>
+    </GoogleOAuthProvider>
   );
 };
 

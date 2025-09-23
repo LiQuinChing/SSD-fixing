@@ -9,13 +9,28 @@ export const AuthProvider = ({ children }) => {
   const storedData = JSON.parse(localStorage.getItem("user_data"));
 
   useEffect(() => {
-    if (storedData) {
-      const { userToken, user } = storedData;
-      setToken(userToken);
-      setUserData(user);
-      setIsAuthenticated(true);
+    // read inside effect so it runs on app start
+    try {
+      const raw = localStorage.getItem("user_data");
+      if (raw) {
+        const { userToken, user } = JSON.parse(raw);
+        if (userToken && user) {
+          setToken(userToken);
+          setUserData(user);
+          setIsAuthenticated(true);
+        }
+      }
+    } catch {
+      /* ignore parse errors */
     }
   }, []);
+  //   if (storedData) {
+  //     const { userToken, user } = storedData;
+  //     setToken(userToken);
+  //     setUserData(user);
+  //     setIsAuthenticated(true);
+  //   }
+  // }, []);
 
   const login = (newToken, newData) => {
     setToken(newToken);
@@ -25,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       "user_data",
       JSON.stringify({ userToken: newToken, user: newData })
     );
-    localStorage.setItem('user', newData.email);
+    localStorage.setItem("user", newData.email); // optional extra key if some legacy code reads it
   };
 
   const logout = () => {
@@ -33,6 +48,8 @@ export const AuthProvider = ({ children }) => {
     setUserData(null);
     setIsAuthenticated(false);
     localStorage.removeItem("user_data");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
   const authValues = {
     token,

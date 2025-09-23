@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const ProfilePage = () => {
   const { userData } = useAuth();
+  if (!userData) return <div className="p-6">Loading profile…</div>; //null-safe to avoid crashes before userData loads
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg overflow-hidden">

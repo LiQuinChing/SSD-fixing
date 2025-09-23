@@ -18,7 +18,7 @@ function App() {
           <Route path="/vehicle-details" element={<VehicleDetails />} />
 
           {/* Add more routes as needed */}
-        </Routes>
+        </routes>
       </Router>
       <ToastContainer /> {/* Include ToastContainer here */}
     </div>

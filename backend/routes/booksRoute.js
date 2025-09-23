@@ -1,7 +1,7 @@
 
 import express from 'express';
 import { Book } from '../models/bookModel.js';
-
+import sanitizeHtml from 'sanitize-html';
 const router = express.Router();
 
 // Route for Save a new Book
@@ -25,15 +25,15 @@ router.post('/', async (request, response) => {
       // });
     // }
     const newBook = {
-      customerName: request.body.customerName,
-      idNumber: request.body.idNumber,
-      Address: request.body.address,
-      mobileNumber: request.body.mobileNumber,
-      email: request.body.email,
-      PickupDate: request.body.pickupDate,
-      PickupTime: request.body.pickupTime,
-      DropoffDate: request.body.dropoffDate,
-      DropoffTime: request.body.dropoffTime,
+      customerName: sanitizeHtml(request.body.customerName),
+      idNumber: sanitizeHtml(request.body.idNumber),
+      Address: sanitizeHtml(request.body.address),
+      mobileNumber: sanitizeHtml(request.body.mobileNumber),
+      email: sanitizeHtml(request.body.email),
+      PickupDate: sanitizeHtml(request.body.pickupDate),
+      PickupTime: sanitizeHtml(request.body.pickupTime),
+      DropoffDate: sanitizeHtml(request.body.dropoffDate),
+      DropoffTime: sanitizeHtml(request.body.dropoffTime),
     };
     console.log(newBook)
     const book = await Book.create(newBook);

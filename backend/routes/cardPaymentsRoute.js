@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { CardPayment } from '../models/cardPaymentModel.js';
 import fs from 'fs';
+import sanitizeHtml from 'sanitize-html';
 // import sendPaymentEmail from '../index.js';
 
 import path from 'path';
@@ -28,11 +29,11 @@ router.post('/user', async (request, response) => {
         }
         const newCardPayment = {
             // NIC: request.body.NIC,
-            CardHolderName: request.body.CardHolderName,
-            CardNumber: request.body.CardNumber,
-            CVV: request.body.CVV,
-            DateOfExpiry: request.body.DateOfExpiry,
-            Amount: request.body.Amount,
+            CardHolderName: sanitizeHtml(request.body.CardHolderName),
+            CardNumber: sanitizeHtml(request.body.CardNumber),
+            CVV: sanitizeHtml(request.body.CVV),
+            DateOfExpiry: sanitizeHtml(request.body.DateOfExpiry),
+            Amount: sanitizeHtml(request.body.Amount),
         };
 
         const cardPayment = await CardPayment.create(newCardPayment);

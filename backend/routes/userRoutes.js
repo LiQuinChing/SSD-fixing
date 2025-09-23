@@ -1,6 +1,6 @@
 import express from "express";
 import { userModel } from "../models/userModel.js";
-
+import sanitizeHtml from "sanitize-html";
 const router = express.Router();
 
 router.post('/create', async (request,response)=>{
@@ -13,8 +13,8 @@ router.post('/create', async (request,response)=>{
         }
         
         const newUser ={
-            idN: request.body.idN,
-            password: request.body.password
+            idN: sanitizeHtml(request.body.idN),
+            password: sanitizeHtml(request.body.password)
         }
 
         

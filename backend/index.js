@@ -33,11 +33,55 @@ import carRoutes from './Routes/carRoute.js'
 
 import booksRoute from './routes/booksRoute.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
+import helmet from 'helmet';
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
+
+// Trust proxy for correct protocol detection behind reverse proxies (e.g., Vercel)
+app.set('trust proxy', 1);
+
+// Security headers (CSP, HSTS, Referrer-Policy, etc.)
+const isProd = process.env.NODE_ENV === 'production';
+app.use(helmet({
+    contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+            "default-src": ["'self'"],
+            "base-uri": ["'self'"],
+            "frame-ancestors": ["'self'"],
+            "img-src": ["'self'", 'data:', 'blob:'],
+            "object-src": ["'none'"],
+            // Note: loosened for common dev tools/CDNs. Tighten by listing exact hosts when possible.
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:'],
+            "script-src-attr": ["'none'"],
+            "style-src": ["'self'", "'unsafe-inline'", 'https:'],
+            "font-src": ["'self'", 'https:', 'data:'],
+            "connect-src": ["'self'", 'https:', 'ws:', 'wss:'],
+            "frame-src": ["'self'", 'https:'],
+            'upgrade-insecure-requests': [],
+        },
+    },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+}));
+
+// Additional modern header (not handled by helmet): Permissions-Policy
+app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', [
+        'accelerometer=()',
+        'camera=()',
+        'geolocation=()',
+        'gyroscope=()',
+        'magnetometer=()',
+        'microphone=()',
+        'payment=(self)',
+        'usb=()'
+    ].join(', '));
+    next();
+});
 
 const allowedOrigins = (process.env.FRONTEND_ORIGINS || 'http://localhost:5173')
     .split(',')

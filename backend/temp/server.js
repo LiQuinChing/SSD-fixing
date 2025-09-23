@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const carRoutes = require('./routes/carRoute');
 
 // Load environment variables
@@ -10,6 +11,13 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
+
+// Security middleware - disable X-Powered-By header and set security headers
+app.use(helmet({
+    xPoweredBy: false, // Explicitly disable X-Powered-By header
+    contentSecurityPolicy: false, // Disable CSP for now to avoid breaking existing functionality
+    crossOriginEmbedderPolicy: false // Disable COEP to avoid issues with CORS
+}));
 
 // Middleware
 app.use(express.json());

@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import helmet from "helmet";
 
 import cardPaymentsRoute from './routes/cardPaymentsRoute.js';
 import cashPaymentsRoute from './routes/cashPaymentsRoute.js';
@@ -36,6 +37,13 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 dotenv.config();
 
 const app = express();
+
+// Security middleware - disable X-Powered-By header and set security headers
+app.use(helmet({
+    xPoweredBy: false, // Explicitly disable X-Powered-By header
+    contentSecurityPolicy: false, // Disable CSP for now to avoid breaking existing functionality
+    crossOriginEmbedderPolicy: false // Disable COEP to avoid issues with file uploads
+}));
 
 app.use(express.json());
 

@@ -323,7 +323,7 @@ const App = () => {
           <Route path="/abooks/details/:id" element={<AShowBook />} />
           <Route path="/abooks/edit/:id" element={<AEditBook />} />
           <Route path="/abooks/delete/:id" element={<ADeleteBook />} />
-        </routes>
+        </Routes>
       </Layout>
     </GoogleOAuthProvider>
   );

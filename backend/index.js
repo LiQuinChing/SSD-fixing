@@ -45,6 +45,44 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false // Disable COEP to avoid issues with file uploads
 }));
 
+// Block access to hidden files and sensitive directories
+app.use((req, res, next) => {
+    const path = req.path;
+    
+    // Block access to hidden files (starting with .)
+    if (path.match(/(^|\/)\.[^\/]/)) {
+        return res.status(403).json({ 
+            error: 'Access denied',
+            message: 'Hidden files are not accessible'
+        });
+    }
+    
+    // Block access to sensitive file patterns
+    const sensitivePatterns = [
+        /\.DS_Store$/i,
+        /\.env$/i,
+        /\.git/i,
+        /\.svn/i,
+        /\.htaccess$/i,
+        /\.htpasswd$/i,
+        /web\.config$/i,
+        /\.bak$/i,
+        /\.backup$/i,
+        /\.log$/i,
+        /\.sql$/i,
+        /\.config$/i
+    ];
+    
+    if (sensitivePatterns.some(pattern => pattern.test(path))) {
+        return res.status(403).json({ 
+            error: 'Access denied',
+            message: 'This file type is not accessible'
+        });
+    }
+    
+    next();
+});
+
 app.use(express.json());
 
 const allowedOrigins = (process.env.FRONTEND_ORIGINS)

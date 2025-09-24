@@ -5,6 +5,7 @@ import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
 import { saveAs } from "file-saver";
 import vmaintain from "../images/vmaintain.png";
+import { formatSafeDateTime } from "../utils/dateUtils";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
@@ -23,12 +24,10 @@ const ShowRecord = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
 
-  //Function to generate report data
   const generateReport = () => {
     const reportData = `
       Record Id: ${record._id}
@@ -37,8 +36,8 @@ const ShowRecord = () => {
       Date: ${record.Date}
       Mileage: ${record.Milage}
       Description: ${record.Description}
-      Create Time: ${new Date(record.createdAt).toString()}
-      Last Update Time: ${new Date(record.updatedAt).toString()}
+      Create Time: ${formatSafeDateTime(record.createdAt)}
+      Last Update Time: ${formatSafeDateTime(record.updatedAt)}
     `;
     const blob = new Blob([reportData], { type: "text/plain;charset=utf-8" });
     saveAs(blob, "record_report.txt");
@@ -86,15 +85,14 @@ const ShowRecord = () => {
             </div>
             <div className="my-4">
               <span className="text-xl mr-4 text-gray-500">Create Time</span>
-              <span>{new Date(record.createdAt).toString()}</span>
+              <span>{formatSafeDateTime(record.createdAt)}</span>
             </div>
             <div className="my-4">
               <span className="text-xl mr-4 text-gray-500">
                 Last Update Time
               </span>
-              <span>{new Date(record.updatedAt).toString()}</span>
+              <span>{formatSafeDateTime(record.updatedAt)}</span>
             </div>
-            {/* Download button */}
             <div className="flex flex-col border-2 bg-orange-500 hover:bg-orange-600 rounded-*1 w-fit p-4 rounded-lg">
               <button onClick={generateReport}>Download Report</button>
             </div>

@@ -5,6 +5,7 @@ import BackButtonV from "../components/BackButtonV";
 import Spinner from "../components/Spinner";
 import jsPDF from "jspdf";
 import bgRentHis from "../images/bgRentHis.jpg";
+import { formatSafeDate, formatSafeDateTime } from "../utils/dateUtils";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
@@ -23,19 +24,17 @@ const ShowRentHisPage = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
+
   const handleGenerateReport = (rent) => {
     const doc = new jsPDF();
 
-    // Report Header
     doc.setFontSize(18);
     doc.text(`Rent Details for ID: ${rent._id}`, 20, 20);
 
-    // Rent Data
-    let currentY = 35; // Start below the header
+    let currentY = 35;
     doc.setFontSize(12);
 
     doc.text(`Name: ${rent.name}`, 20, currentY);
@@ -44,20 +43,19 @@ const ShowRentHisPage = () => {
     currentY += 8;
     doc.text(`Rent Date: ${rent.rentDate}`, 20, currentY);
     currentY += 8;
-    doc.text(`Rent Date: ${rent.renturnDate}`, 20, currentY);
+    doc.text(`Return Date: ${rent.returnDate}`, 20, currentY);
     currentY += 8;
-    doc.text(`Rent Date: ${rent.mileage}`, 20, currentY);
+    doc.text(`Mileage: ${rent.mileage} km`, 20, currentY);
     currentY += 8;
-    doc.text(`Rent Amount: ${rent.amount}`, 20, currentY);
+    doc.text(`Rent Amount: Rs ${rent.amount}`, 20, currentY);
     currentY += 8;
-    doc.text(`Create Time: ${rent.createdAt}`, 20, currentY);
+    doc.text(`Create Time: ${formatSafeDate(rent.createdAt)}`, 20, currentY);
     currentY += 8;
-    doc.text(`Last Update Time: ${rent.updatedAt}`, 20, currentY);
+    doc.text(`Last Update Time: ${formatSafeDate(rent.updatedAt)}`, 20, currentY);
 
-    // Footer
     doc.setFontSize(10);
     doc.text(
-      `Report generated on: ${new Date().toLocaleString()}`,
+      `Report generated on: ${formatSafeDateTime(new Date())}`,
       20,
       doc.internal.pageSize.height - 15
     );
@@ -118,13 +116,13 @@ const ShowRentHisPage = () => {
             </div>
             <div className="my-4">
               <span className="text-xl mr-4 text-gray-500">Create Time</span>
-              <span>{new Date(rent.createdAt).toString()}</span>
+              <span>{formatSafeDateTime(rent.createdAt)}</span>
             </div>
             <div className="my-4">
               <span className="text-xl mr-4 text-gray-500">
                 Last Update Time
               </span>
-              <span>{new Date(rent.updatedAt).toString()}</span>
+              <span>{formatSafeDateTime(rent.updatedAt)}</span>
             </div>
           </div>
         )}

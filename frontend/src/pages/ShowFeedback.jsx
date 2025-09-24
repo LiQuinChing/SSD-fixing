@@ -4,6 +4,7 @@ import axios from "axios";
 import BackButton from "../components/BackButton"; // Assuming this is correct
 import Spinner from "../components/Spinner"; // Assuming this is correct
 import "./FirstPage.css";
+import { formatSafeDateTime } from "../utils/dateUtils";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
@@ -34,7 +35,9 @@ const ShowFeedback = () => {
       `Feedback Details:\n\n` +
       `Name: ${feedback.name}\n` +
       `Email: ${feedback.email}\n` +
-      `Feedback: ${feedback.details}`;
+      `Feedback: ${feedback.details}\n` +
+      `Created: ${formatSafeDate(feedback.createdAt)}\n` +
+      `Updated: ${formatSafeDate(feedback.updatedAt)}`;
 
     const blob = new Blob([reportContent], {
       type: "text/plain;charset=utf-8",
@@ -78,13 +81,13 @@ const ShowFeedback = () => {
           </div>
           <div className="my-4">
             <span className="text-xl m-4 text-orange-500">Create Time :</span>
-            <span>{new Date(feedback.createdAt).toString()}</span>
+            <span>{formatSafeDateTime(feedback.createdAt)}</span>
           </div>
           <div className="my-4">
             <span className="text-xl m-4 text-orange-500">
               Last Updated Time :
             </span>
-            <span>{new Date(feedback.updatedAt).toString()}</span>
+            <span>{formatSafeDateTime(feedback.updatedAt)}</span>
           </div>
         </div>
         <button

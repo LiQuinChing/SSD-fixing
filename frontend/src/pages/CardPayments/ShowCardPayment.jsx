@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import clientbg from "../../images/clientbg.jpeg";
 import Spinner from "../../components/Spinner";
 import jsPDF from "jspdf";
+import { formatSafeDateTime } from "../../utils/dateUtils";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
@@ -25,7 +26,7 @@ const ShowCardPayment = () => {
         console.log(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]); // Added dependency
 
   const handleGenerateReport = (cardpayment) => {
     const doc = new jsPDF();
@@ -48,7 +49,7 @@ const ShowCardPayment = () => {
 
     doc.setFontSize(10);
     doc.text(
-      `Report generated on: ${new Date().toLocaleString()}`,
+      `Report generated on: ${formatSafeDateTime(new Date())}`,
       20,
       doc.internal.pageSize.height - 15
     );
@@ -95,7 +96,7 @@ const ShowCardPayment = () => {
             </div>
             <div>
               <span className="text-x1 mr-4 text-gray-500">Date</span>
-              <span>{new Date(cardpayment.createdAt).toString()}</span>
+              <span>{formatSafeDateTime(cardpayment.createdAt)}</span>
             </div>
           </div>
         )}

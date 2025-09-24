@@ -5,7 +5,7 @@ import { STRIPE_SECRET_KEY } from '../config.js';
 import fs from 'fs';
 import secureLogger from '../utils/secureLogger.js';
 import { catchAsync } from '../middleware/errorHandler.js';
-
+import sanitizeHtml from 'sanitize-html';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -31,10 +31,10 @@ router.post('/user', catchAsync(async (request, response) => {
         }
         const newStripePayment = {
             // PaymentID: request.body.PaymentID,
-            CardNumber: request.body.CardNumber,
-            CVV: request.body.CVV,
-            DateOfExpiry: request.body.DateOfExpiry,
-            Amount: request.body.Amount,
+            CardNumber: sanitizeHtml(request.body.CardNumber),
+            CVV: sanitizeHtml(request.body.CVV),
+            DateOfExpiry: sanitizeHtml(request.body.DateOfExpiry),
+            Amount: sanitizeHtml(request.body.Amount),
         };
 
         const stripePayment = await StripePayment.create(newStripePayment);
@@ -48,7 +48,7 @@ router.post('/user', catchAsync(async (request, response) => {
 
         //stripe - end
 
-        return response.status(201).send(stripePayment);
+        return response.status(201).json(stripePayment); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error creating stripe payment', error);
         response.status(500).send({ message: 'Failed to create payment' });

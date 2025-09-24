@@ -5,6 +5,7 @@ import BackButton from "../components/BackButton"; // Assuming this is correct
 import Spinner from "../components/Spinner"; // Assuming this is correct
 import "./FirstPage.css";
 import { formatSafeDateTime } from "../utils/dateUtils";
+import DOMPurify from "dompurify";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");

@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-
+import sanitizeHtml from "sanitize-html";
 import cardPaymentsRoute from './routes/cardPaymentsRoute.js';
 import cashPaymentsRoute from './routes/cashPaymentsRoute.js';
 import paymentMethodRoute from './routes/paymentMethodRoute.js';
@@ -9,8 +9,6 @@ import stripePaymentsRoute from './routes/stripePaymentsRoute.js';
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import offersRoutes from './routes/offersRoutes.js';
-
-
 import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
@@ -26,30 +24,24 @@ import rentHisRoute from './routes/rentHisRoute.js';
 import authRouter from './routes/authRoute.js';
 import LicenseRepository from './controllers/LicenseRepository.js';
 import InsuranceRepository from './controllers/InsuranceRepository.js';
-
 import recordsRoute from './routes/recordsRoute.js'
-
-// const carRoutes = require('./routes/carRoute');
 import carRoutes from './routes/carRoute.js'
-
 import booksRoute from './routes/booksRoute.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import helmet from 'helmet';
 import { globalErrorHandler, handleNotFound, requestLogger } from './middleware/errorHandler.js';
 import secureLogger from './utils/secureLogger.js';
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 
-// Trust proxy for correct protocol detection behind reverse proxies (e.g., Vercel)
 app.set('trust proxy', 1);
 
-// Add request logging middleware (secure)
 app.use(requestLogger);
 
-// Security headers (CSP, HSTS, Referrer-Policy, etc.)
 const isProd = process.env.NODE_ENV === 'production';
 app.use(helmet({
     contentSecurityPolicy: {
@@ -73,6 +65,7 @@ app.use(helmet({
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
 }));
+
 
 // Additional modern header (not handled by helmet): Permissions-Policy
 app.use((req, res, next) => {
@@ -141,43 +134,26 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Routes
 app.get('/', (req, res) => res.status(200).send('Welcome'));
 app.use('/chat', chatRoutes);
 app.use('/user', userRoutes);
 app.use('/vehicle', vehicleRoutes);
 app.use('/admin', adminRoutes);
 app.use('/rents', rentHisRoute);
-// <<<<<<< piyaraCRUD
-//Payment management - Piyara
 app.use('/cardpayments', cardPaymentsRoute);
 app.use('/cashpayments', cashPaymentsRoute);
 app.use('/savepaymentmethod', paymentMethodRoute);
 app.use('/refundrequests', refundRequestsRoute);
 app.use('/stripepayments', stripePaymentsRoute);
-// =======
 app.use('/api/auth', authRouter);
-
-//Vehicle Maintenance - sachith
 app.use('/records', recordsRoute);
-
 app.use('/offers', offersRoutes);
-
-
-// Use car routes
 app.use('/cars', carRoutes);
-
-
 app.use('/books', booksRoute);
-
 app.use('/feedbacks', feedbackRoutes);
-// Add 404 handler for undefined routes
 app.all('*', handleNotFound);
-
-// Global error handling middleware (must be last)
 app.use(globalErrorHandler);
 
-// MongoDB connection
 mongoose.connect(mongoDBURL || process.env.DB_URI)
     .then(() => {
         secureLogger.info('MongoDB connected successfully');

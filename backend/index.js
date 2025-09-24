@@ -104,6 +104,21 @@ app.use((req, res, next) => {
     // Referrer policy that works with OAuth
     res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
 
+    // Add strict Content Security Policy (CSP)
+    const cspDirectives = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob: https:",
+        `connect-src 'self' ${allowedOrigins.join(' ')} https://accounts.google.com https://apis.google.com`,
+        "font-src 'self' data:",
+        "frame-src https://accounts.google.com"
+    ].join('; ');
+    res.header('Content-Security-Policy', cspDirectives);
+
     next();
 });
 

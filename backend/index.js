@@ -63,6 +63,26 @@ const envOrigins = (process.env.FRONTEND_ORIGINS || '')
 
 const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
+// Host header allow-list derived from allowedOrigins (defense against LAN/DNS rebinding)
+const parseHost = (s) => {
+    try { return new URL(s).hostname; } catch { return s.replace(/^https?:\/\//, '').split(':')[0]; }
+};
+const defaultHosts = ['localhost', '127.0.0.1'];
+const envHosts = envOrigins.map(parseHost).filter(Boolean);
+const allowedHosts = Array.from(new Set([...defaultHosts, ...envHosts]));
+
+// Block requests with unexpected Host header in non-production
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        const hostHeader = (req.headers.host || '').split(':')[0];
+        if (!allowedHosts.includes(hostHeader)) {
+            console.warn('Blocked Host header:', hostHeader, 'Allowed:', allowedHosts);
+            return res.status(400).send('Invalid Host header');
+        }
+    }
+    next();
+});
+
 app.use(cors({
     origin(origin, cb) {
         // Allow non-browser requests or same-origin (no Origin header)
@@ -84,12 +104,6 @@ app.use(cors({
     preflightContinue: false,
 }));
 
-// app.use(cors({
-//     origin: 'http://localhost:5173', // Adjust according to your front-end origin
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
 // Security headers specifically for Google OAuth
 app.use((req, res, next) => {
     // Essential for Google OAuth popup/redirect flow
@@ -110,12 +124,13 @@ app.use((req, res, next) => {
         "base-uri 'self'",
         "object-src 'none'",
         "frame-ancestors 'none'",
-        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com",
+        "script-src 'self' https://accounts.google.com https://apis.google.com",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob: https:",
         `connect-src 'self' ${allowedOrigins.join(' ')} https://accounts.google.com https://apis.google.com`,
         "font-src 'self' data:",
-        "frame-src https://accounts.google.com"
+        "frame-src https://accounts.google.com",
+        "upgrade-insecure-requests"
     ].join('; ');
     res.header('Content-Security-Policy', cspDirectives);
 
@@ -189,8 +204,10 @@ app.use('/feedbacks', feedbackRoutes);
 mongoose.connect(mongoDBURL || process.env.DB_URI)
     .then(() => {
         console.log('MongoDB connected');
-        app.listen(PORT || process.env.PORT, () => {
-            console.log(`Server running on port ${PORT || process.env.PORT}`);
+        const port = PORT || process.env.PORT;
+        const bindAddress = process.env.BIND_ADDRESS || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
+        app.listen(port, bindAddress, () => {
+            console.log(`Server running on http://${bindAddress}:${port}`);
         });
     })
     .catch(err => console.log('MongoDB connection error:', err));

@@ -18,7 +18,7 @@ const Login = () => {
   };
 
   const handleGoogleSuccess = async (credential) => {
-    const base = import.meta.env.VITE_API_BASE || "http://localhost:5555/api";
+    const base = import.meta.env.VITE_API_BASE;
     try {
       setGoogleError(""); // Clear any previous errors
       console.log("Sending credential to backend:", credential);

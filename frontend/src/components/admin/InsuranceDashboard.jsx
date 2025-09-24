@@ -5,6 +5,7 @@ import InsuranceTable from './InsuranceTable';
 import InsuranceModal from './InsuranceModal';
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
+import { formatSafeDate, formatMachineReadableDate } from '../../utils/dateUtils';
 
 function InsuranceDashboard() {
     const [insurances, setInsurances] = useState([]);
@@ -55,8 +56,8 @@ function InsuranceDashboard() {
                 ins.policyNumber,
                 ins.policyType,
                 ins.coverageDetails,
-                ins.startDate,
-                ins.endDate,
+                formatSafeDate(ins.startDate),
+                formatSafeDate(ins.endDate),
                 ins.premiumAmount,
                 ins.email,
                 ins.status

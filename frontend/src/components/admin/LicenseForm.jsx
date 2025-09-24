@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import backgroundImage from '../../../public/carpic.jpg'; // replace with the path to your image
 import { useLocation , useNavigate } from 'react-router-dom';
 import { createInsurance, createLicense } from '../../api/licenseAPI';
+import { formatHTMLDateValue } from '../../utils/dateUtils';
 
 const LicenseForm = () => {
   const navigate = useNavigate();
@@ -61,11 +62,25 @@ const LicenseForm = () => {
         {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <div className="mb-4">
           <label htmlFor="startDate" className="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
-          <input type="date" id="startDate" name="startDate" onChange={handleInputChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+          <input 
+            type="date" 
+            id="startDate" 
+            name="startDate" 
+            value={formData.startDate}
+            onChange={handleInputChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+          />
         </div>
         <div className="mb-4">
           <label htmlFor="endDate" className="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
-          <input type="date" id="endDate" name="endDate" onChange={handleInputChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+          <input 
+            type="date" 
+            id="endDate" 
+            name="endDate" 
+            value={formData.endDate}
+            onChange={handleInputChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+          />
         </div>
         <div className="mb-4">
           <label htmlFor="uploadLicense" className="block text-gray-700 text-sm font-bold mb-2">Upload the license:</label>

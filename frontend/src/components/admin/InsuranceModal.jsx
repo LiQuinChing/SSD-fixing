@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatHTMLDateValue } from '../../utils/dateUtils';
 
 function InsuranceModal({ isOpen, onClose, insurance, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -24,8 +25,8 @@ function InsuranceModal({ isOpen, onClose, insurance, onUpdate }) {
         policyNumber: insurance.policyNumber || '',
         policyType: insurance.policyType || '',
         coverageDetails: insurance.coverageDetails || '',
-        startDate: insurance.startDate ? insurance.startDate.split('T')[0] : '',
-        endDate: insurance.endDate ? insurance.endDate.split('T')[0] : '',
+        startDate: formatHTMLDateValue(insurance.startDate),
+        endDate: formatHTMLDateValue(insurance.endDate),
         premiumAmount: insurance.premiumAmount || '',
         contactInformation: insurance.contactInformation || '',
         email: insurance.email || '',

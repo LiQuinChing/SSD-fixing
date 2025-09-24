@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-
+import sanitizeHtml from "sanitize-html";
 import cardPaymentsRoute from './routes/cardPaymentsRoute.js';
 import cashPaymentsRoute from './routes/cashPaymentsRoute.js';
 import paymentMethodRoute from './routes/paymentMethodRoute.js';
@@ -9,8 +9,6 @@ import stripePaymentsRoute from './routes/stripePaymentsRoute.js';
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import offersRoutes from './routes/offersRoutes.js';
-
-
 import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
@@ -26,30 +24,24 @@ import rentHisRoute from './routes/rentHisRoute.js';
 import authRouter from './routes/authRoute.js';
 import LicenseRepository from './controllers/LicenseRepository.js';
 import InsuranceRepository from './controllers/InsuranceRepository.js';
-
 import recordsRoute from './routes/recordsRoute.js'
-
-// const carRoutes = require('./routes/carRoute');
 import carRoutes from './routes/carRoute.js'
-
 import booksRoute from './routes/booksRoute.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import helmet from 'helmet';
 import { globalErrorHandler, handleNotFound, requestLogger } from './middleware/errorHandler.js';
 import secureLogger from './utils/secureLogger.js';
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 
-// Trust proxy for correct protocol detection behind reverse proxies (e.g., Vercel)
 app.set('trust proxy', 1);
 
-// Add request logging middleware (secure)
 app.use(requestLogger);
 
-// Security headers (CSP, HSTS, Referrer-Policy, etc.)
 const isProd = process.env.NODE_ENV === 'production';
 app.use(helmet({
     contentSecurityPolicy: {
@@ -74,7 +66,6 @@ app.use(helmet({
     hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
 }));
 
-// Additional modern header (not handled by helmet): Permissions-Policy
 app.use((req, res, next) => {
     res.setHeader('Permissions-Policy', [
         'accelerometer=()',
@@ -141,43 +132,26 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Routes
 app.get('/', (req, res) => res.status(200).send('Welcome'));
 app.use('/chat', chatRoutes);
 app.use('/user', userRoutes);
 app.use('/vehicle', vehicleRoutes);
 app.use('/admin', adminRoutes);
 app.use('/rents', rentHisRoute);
-// <<<<<<< piyaraCRUD
-//Payment management - Piyara
 app.use('/cardpayments', cardPaymentsRoute);
 app.use('/cashpayments', cashPaymentsRoute);
 app.use('/savepaymentmethod', paymentMethodRoute);
 app.use('/refundrequests', refundRequestsRoute);
 app.use('/stripepayments', stripePaymentsRoute);
-// =======
 app.use('/api/auth', authRouter);
-
-//Vehicle Maintenance - sachith
 app.use('/records', recordsRoute);
-
 app.use('/offers', offersRoutes);
-
-
-// Use car routes
 app.use('/cars', carRoutes);
-
-
 app.use('/books', booksRoute);
-
 app.use('/feedbacks', feedbackRoutes);
-// Add 404 handler for undefined routes
 app.all('*', handleNotFound);
-
-// Global error handling middleware (must be last)
 app.use(globalErrorHandler);
 
-// MongoDB connection
 mongoose.connect(mongoDBURL || process.env.DB_URI)
     .then(() => {
         secureLogger.info('MongoDB connected successfully');
@@ -254,14 +228,14 @@ cron.schedule('0 7 * * *', async () => {
 app.post('/licenses', upload.single('uploadLicense'), async (req, res, next) => {
     try {
         const newLicense = await LicenseRepository.addLicense({
-            vehicleNo: req.body.vehicleNo,
-            startDate: req.body.startDate,
-            endDate: req.body.endDate,
+            vehicleNo: sanitizeHtml(req.body.vehicleNo || ""),
+            startDate: sanitizeHtml(req.body.startDate || ""),
+            endDate: sanitizeHtml(req.body.endDate || ""),
             uploadLicense: req.file ? req.file.path : null,
-            email: req.body.email,
-            notes: req.body.notes
+            email: sanitizeHtml(req.body.email || ""),
+            notes: sanitizeHtml(req.body.notes || "")
         });
-        res.status(201).send(newLicense);
+        res.status(201).json(newLicense); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error when adding license', error);
         next(error);
@@ -281,7 +255,7 @@ app.get('/licenses', async (req, res, next) => {
 app.put('/licenses/:id', async (req, res, next) => {
     try {
         const updatedLicense = await LicenseRepository.updateLicense(req.params.id, req.body);
-        res.send(updatedLicense);
+        res.json(updatedLicense); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error updating license', error);
         next(error);
@@ -291,7 +265,7 @@ app.put('/licenses/:id', async (req, res, next) => {
 app.delete('/licenses/:id', async (req, res, next) => {
     try {
         const deletedLicense = await LicenseRepository.deleteLicense(req.params.id);
-        res.send(deletedLicense);
+        res.json(deletedLicense); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error deleting license', error);
         next(error);
@@ -304,19 +278,19 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res, next)
     try {
         const newInsurance = await InsuranceRepository.addInsurance({
             // include all required fields
-            vehicleNo: req.body.vehiclenumber,
-            insuranceProvider: req.body.insuranceProvider,
-            policyNumber: req.body.policyNumber,
-            policyType: req.body.policyType,
-            coverageDetails: req.body.coverageDetails,
-            startDate: req.body.startDate,
-            endDate: req.body.endDate,
-            premiumAmount: req.body.premiumAmount,
-            contactInformation: req.body.contactInformation,
+            vehicleNo: sanitizeHtml(req.body.vehiclenumber),
+            insuranceProvider: sanitizeHtml(req.body.insuranceProvider),
+            policyNumber: sanitizeHtml(req.body.policyNumber),
+            policyType: sanitizeHtml(req.body.policyType),
+            coverageDetails: sanitizeHtml(req.body.coverageDetails),
+            startDate: sanitizeHtml(req.body.startDate),
+            endDate: sanitizeHtml(req.body.endDate),
+            premiumAmount: sanitizeHtml(req.body.premiumAmount),
+            contactInformation: sanitizeHtml(req.body.contactInformation),
             uploadInsurance: req.file ? req.file.path : null, // Assuming file is optional
-            email: req.body.email,
+            email: sanitizeHtml(req.body.email),
         });
-        res.status(201).send(newInsurance);
+        res.status(201).json(newInsurance); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error when adding insurance', error);
         next(error);
@@ -326,7 +300,7 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res, next)
 app.get('/insurances', async (req, res, next) => {
     try {
         const insurances = await InsuranceRepository.getAllInsurances();
-        res.send(insurances);
+        res.json(insurances); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error fetching insurances', error);
         next(error);
@@ -336,7 +310,7 @@ app.get('/insurances', async (req, res, next) => {
 app.put('/insurances/:id', async (req, res, next) => {
     try {
         const updatedInsurance = await InsuranceRepository.updateInsurance(req.params.id, req.body);
-        res.send(updatedInsurance);
+        res.json(updatedInsurance); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error updating insurance', error);
         next(error);
@@ -346,7 +320,7 @@ app.put('/insurances/:id', async (req, res, next) => {
 app.delete('/insurances/:id', async (req, res, next) => {
     try {
         const deletedInsurance = await InsuranceRepository.deleteInsurance(req.params.id);
-        res.send(deletedInsurance);
+        res.json(deletedInsurance); // Solved XSS vulnerability
     } catch (error) {
         secureLogger.error('Error deleting insurance', error);
         next(error);

@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import validator from 'validator';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/userModelNew.js';
 import createError from '../utils/appError.js';
@@ -15,13 +16,46 @@ const signToken = (user) =>
 // REGISTER USER - local
 export const signup = async (req, res, next) => {
   try {
-    // const user = await User.findOne({ email: req.body.email });
     const { email, password, ...rest } = req.body;
-    const user = await User.findOne({ email });
-    if (user) {
+
+    // Validate required fields
+    if (!email || !password) {
+      return next(new createError("Email and password are required", 400));
+    }
+
+    // Enforce a strong password policy
+    // Adjust options as needed. Current options require:
+    // minLength 8, at least 1 lowercase, 1 uppercase, 1 number, 1 symbol
+    const passwordOptions = {
+      minLength: 8,
+      minLowercase: 3,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    };
+
+    if (!validator.isStrongPassword(password, passwordOptions)) {
+      return next(
+        new createError(
+          "Password is too weak. It must be at least 8 characters long and include uppercase, lowercase, number and symbol.",
+          400
+        )
+      );
+    }
+
+    // Optional: validate email format
+    if (!validator.isEmail(email)) {
+      return next(new createError("Invalid email address", 400));
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
       return next(new createError("User already exists!", 400));
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const newUser = await User.create({
       ...rest,
       email,
@@ -29,10 +63,6 @@ export const signup = async (req, res, next) => {
       provider: 'local',
     });
 
-    // Assign JWT (json web token) to user
-    // const token = jwt.sign({ _id: newUser._id }, "secretkey123", {
-    //   expiresIn: '90d',
-    // });
     const token = signToken(newUser);
     res.status(201).json({
       status: 'success',

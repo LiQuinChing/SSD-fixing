@@ -21,7 +21,7 @@ router.post("/", async (request, response) => {
     try {
         const newOffer = { name, description, details };
         const offerResponse = await offers.create(newOffer);
-        return response.status(201).send(offerResponse);
+        return response.status(201).json(offerResponse); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

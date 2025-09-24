@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/BackButton.jsx";
+import { formatSafeDateTime, formatMachineReadableDate } from "../../utils/dateUtils";
 
 const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
@@ -33,9 +34,9 @@ const ShowOffers = () => {
     csvContent += `${offers._id},${offers.name},${offers.description.replace(
       /,/g,
       ";"
-    )},${offers.details.replace(/,/g, ";")},${new Date(
+    )},${offers.details.replace(/,/g, ";")},${formatMachineReadableDate(
       offers.createdAt
-    ).toISOString()},${new Date(offers.updatedAt).toISOString()}\n`;
+    )},${formatMachineReadableDate(offers.updatedAt)}\n`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -77,11 +78,11 @@ const ShowOffers = () => {
             </div>
             <div className="my-4">
               <span className="text-xl m-4 ">Create Time :</span>
-              <span>{new Date(offers.createdAt).toString()}</span>
+              <span>{formatSafeDateTime(offers.createdAt)}</span>
             </div>
             <div className="my-4">
               <span className="text-xl m-4 ">Last Updated Time :</span>
-              <span>{new Date(offers.updatedAt).toString()}</span>
+              <span>{formatSafeDateTime(offers.updatedAt)}</span>
             </div>
           </div>
           <button

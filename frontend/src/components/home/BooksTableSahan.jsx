@@ -9,15 +9,15 @@ const BooksTable = ({ books }) => {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pickup Date</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pickup Time</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dropoff Date</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dropoff Time</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {books.map((book, index) => (
+          {books.map((book) => (
             <tr key={book._id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">{book.PickupDate}</td>
               <td className="px-6 py-4 whitespace-nowrap">{book.PickupTime}</td>

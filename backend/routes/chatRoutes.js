@@ -1,6 +1,7 @@
 import express from "express";
 import { chatModel } from "../models/chatModel.js";
 import { replyModel } from "../models/replyModel.js";
+import sanitizeHtml from "sanitize-html";
 
 const router = express.Router();
 
@@ -18,11 +19,11 @@ router.post('/create', async (request,response)=>{
         console.log("hI IN CHATROUTES")
 
         const newChat = {
-            title: request.body.title,
-            vehicle: request.body.vehicle,
-            issue: request.body.issue,
-            user: request.body.user,
-            vehicletypee: request.body.vehicletypee
+            title: sanitizeHtml(request.body.title),
+            vehicle: sanitizeHtml(request.body.vehicle),
+            issue: sanitizeHtml(request.body.issue),
+            user: sanitizeHtml(request.body.user),
+            vehicletypee: sanitizeHtml(request.body.vehicletypee),
             
         }
         
@@ -175,12 +176,12 @@ router.post('/create/admin/', async (request,response)=>{
     try {
 
         const newChat = {
-            title: request.body.title,
-            issueid: request.body.issueid
+            title: sanitizeHtml(request.body.title),
+            issueid: sanitizeHtml(request.body.issueid)
         }
 
         const chat = await replyModel.create(newChat);
-        return response.status(201).send(chat);
+        return response.status(201).json(chat); // Solved XSS vulnerability
     } catch (error) {
         
     }

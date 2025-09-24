@@ -2,26 +2,25 @@ import express from "express";
 import { vehicleModel } from "../models/vehicleModel.js";
 import secureLogger from '../utils/secureLogger.js';
 import { catchAsync } from '../middleware/errorHandler.js';
+import sanitizeHtml from "sanitize-html";   
 
 const router = express.Router();
 
-
 router.post('/create', catchAsync(async (request, response) => {
     secureLogger.debug("Creating new vehicle");
-    
+
     if (!request.body.vehiclenumber || !request.body.vehiclename) {
         return response.status(400).send({ message: 'Send all the required fields' });
     }
 
     const newVehicle = {
-        vehiclenumber: request.body.vehiclenumber,
-        vehiclename: request.body.vehiclename
-    }
+        vehiclenumber: sanitizeHtml(request.body.vehiclenumber),
+        vehiclename: sanitizeHtml(request.body.vehiclename)
+    };
 
     const vehicle = await vehicleModel.create(newVehicle);
-    return response.status(201).send(vehicle);
+    return response.status(201).json(vehicle); // Prevents XSS
 }));
-
 
 router.post('/validateVehicle', async (request,response)=>{
     const {vehiclenumber} = request.body;

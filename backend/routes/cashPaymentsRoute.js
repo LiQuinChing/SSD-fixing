@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { CashPayment } from '../models/cashPaymentModel.js';
 import fs from 'fs';
+import sanitizeHtml from 'sanitize-html';
 // import sendPaymentEmail from '../index.js';
 
 const router = express.Router();
@@ -27,15 +28,15 @@ router.post('/user', async (request, response) => {
         }
         const newCashPayment = {
             // PaymentID: request.body.PaymentID,
-            ReceiptNo: request.body.ReceiptNo,
-            Date: request.body.PaymentDate,
-            Status: request.body.Status,
-            Amount: request.body.Amount,
+            ReceiptNo: sanitizeHtml(request.body.ReceiptNo),
+            Date: sanitizeHtml(request.body.PaymentDate),
+            Status: sanitizeHtml(request.body.Status),
+            Amount: sanitizeHtml(request.body.Amount),
         };
 
         const cashpayment = await CashPayment.create(newCashPayment);
 
-        return response.status(201).send(cashpayment);
+        return response.status(201).json(cashpayment); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

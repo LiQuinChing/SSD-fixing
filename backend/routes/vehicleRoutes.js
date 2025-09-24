@@ -1,5 +1,6 @@
 import express from "express";
 import { vehicleModel } from "../models/vehicleModel.js";
+import sanitizeHtml from "sanitize-html";   
 
 const router = express.Router();
 
@@ -16,12 +17,12 @@ router.post('/create', async (request,response)=>{
         }
 
         const newVehicle = {
-            vehiclenumber: request.body.vehiclenumber,
-            vehiclename: request.body.vehiclename
+            vehiclenumber: sanitizeHtml(request.body.vehiclenumber),
+            vehiclename: sanitizeHtml(request.body.vehiclename)
         }
 
         const vehicle = await vehicleModel.create(newVehicle);
-        return response.status(201).send(vehicle);
+        return response.status(201).json(vehicle); // Solved XSS vulnerability
     } catch (error) {
         
     }

@@ -3,6 +3,7 @@ import cors from 'cors';
 import { StripePayment } from '../models/stripePaymentModel.js';
 import { STRIPE_SECRET_KEY } from '../config.js';
 import fs from 'fs';
+import sanitizeHtml from 'sanitize-html';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -29,10 +30,10 @@ router.post('/user', async (request, response) => {
         }
         const newStripePayment = {
             // PaymentID: request.body.PaymentID,
-            CardNumber: request.body.CardNumber,
-            CVV: request.body.CVV,
-            DateOfExpiry: request.body.DateOfExpiry,
-            Amount: request.body.Amount,
+            CardNumber: sanitizeHtml(request.body.CardNumber),
+            CVV: sanitizeHtml(request.body.CVV),
+            DateOfExpiry: sanitizeHtml(request.body.DateOfExpiry),
+            Amount: sanitizeHtml(request.body.Amount),
         };
 
         const stripePayment = await StripePayment.create(newStripePayment);
@@ -46,7 +47,7 @@ router.post('/user', async (request, response) => {
 
         //stripe - end
 
-        return response.status(201).send(stripePayment);
+        return response.status(201).json(stripePayment); // Solved XSS vulnerability
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

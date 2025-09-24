@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { feedbacks } from '../models/feedbackModel.js'; // Assuming the model file is named 'FeedbackModel.js' and exports a model named 'Feedback'
+import { feedbacks } from '../models/feedbackModel.js';
 
 const router = express.Router();
 
@@ -8,7 +8,6 @@ function isValidString(value) {
     return typeof value === 'string' && value.trim() !== '';
 }
 
-// Add new feedback
 router.post("/", async (request, response) => {
     const { name, email, details } = request.body;
 
@@ -23,12 +22,10 @@ router.post("/", async (request, response) => {
         const feedbackResponse = await feedbacks.create (newFeedback);
         return response.status(201).json(feedbackResponse);
     } catch (error) {
-        console.error(error.message);
         return response.status(500).json({ message: error.message });
     }
 });
 
-// Read all feedbacks
 router.get("/", async (request, response) => {
     try {
         const allFeedbacks = await feedbacks.find({});
@@ -37,12 +34,10 @@ router.get("/", async (request, response) => {
             data: allFeedbacks
         });
     } catch (error) {
-        console.error(error.message);
         return response.status(500).json({ message: error.message });
     }
 });
 
-// Read one feedback
 router.get("/:id", async (request, response) => {
     const { id } = request.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -56,12 +51,10 @@ router.get("/:id", async (request, response) => {
         }
         return response.status(200).json(feedback);
     } catch (error) {
-        console.error(error.message);
         return response.status(500).json({ message: error.message });
     }
 });
 
-// Update feedback
 router.put("/:id", async (request, response) => {
     const { name, email, details } = request.body;
     const { id } = request.params;
@@ -83,12 +76,10 @@ router.put("/:id", async (request, response) => {
 
         return response.status(200).json({ message: 'Feedback updated', data: updatedFeedback });
     } catch (error) {
-        console.error(error.message);
         return response.status(500).json({ message: error.message });
     }
 });
 
-// Delete feedback
 router.delete("/:id", async (request, response) => {
     const { id } = request.params;
 
@@ -104,15 +95,8 @@ router.delete("/:id", async (request, response) => {
 
         return response.status(200).json({ message: 'Feedback deleted' });
     } catch (error) {
-        console.error(error.message);
         return response.status(500).json({ message: error.message });
     }
 });
-
-
-
-
-  
-
 
 export default router;

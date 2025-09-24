@@ -1,33 +1,26 @@
 import express from "express";
 import { vehicleModel } from "../models/vehicleModel.js";
+import secureLogger from '../utils/secureLogger.js';
+import { catchAsync } from '../middleware/errorHandler.js';
 import sanitizeHtml from "sanitize-html";   
 
 const router = express.Router();
 
+router.post('/create', catchAsync(async (request, response) => {
+    secureLogger.debug("Creating new vehicle");
 
-router.post('/create', async (request,response)=>{
-    
-    try {
-        console.log("in create route")
-        if(
-            !request.body.vehiclenumber ||
-            !request.body.vehiclename
-        ){
-            return response.status(400).send('Send all the required fields');
-        }
-
-        const newVehicle = {
-            vehiclenumber: sanitizeHtml(request.body.vehiclenumber),
-            vehiclename: sanitizeHtml(request.body.vehiclename)
-        }
-
-        const vehicle = await vehicleModel.create(newVehicle);
-        return response.status(201).json(vehicle); // Solved XSS vulnerability
-    } catch (error) {
-        
+    if (!request.body.vehiclenumber || !request.body.vehiclename) {
+        return response.status(400).send({ message: 'Send all the required fields' });
     }
-})
 
+    const newVehicle = {
+        vehiclenumber: sanitizeHtml(request.body.vehiclenumber),
+        vehiclename: sanitizeHtml(request.body.vehiclename)
+    };
+
+    const vehicle = await vehicleModel.create(newVehicle);
+    return response.status(201).json(vehicle); // Prevents XSS
+}));
 
 router.post('/validateVehicle', async (request,response)=>{
     const {vehiclenumber} = request.body;

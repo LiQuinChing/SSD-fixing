@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import carPic from '../../../public/carpic.jpg'; // Replace with the path to your image
+import { formatHTMLDateValue } from '../../utils/dateUtils';
 
 const InsuranceForm = () => {
   const navigate = useNavigate();
@@ -75,11 +76,25 @@ const InsuranceForm = () => {
         </div>
         <div className="mb-4">
           <label htmlFor="startDate" className="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
-          <input type="date" id="startDate" name="startDate" value={formData.startDate} onChange={handleInputChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+          <input 
+            type="date" 
+            id="startDate" 
+            name="startDate" 
+            value={formData.startDate} 
+            onChange={handleInputChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+          />
         </div>
         <div className="mb-4">
           <label htmlFor="endDate" className="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
-          <input type="date" id="endDate" name="endDate" value={formData.endDate} onChange={handleInputChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+          <input 
+            type="date" 
+            id="endDate" 
+            name="endDate" 
+            value={formData.endDate} 
+            onChange={handleInputChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+          />
         </div>
         <div className="mb-4">
           <label htmlFor="premiumAmount" className="block text-gray-700 text-sm font-bold mb-2">Premium Amount:</label>

@@ -1,5 +1,6 @@
 import React from 'react';
 import InsuranceModal from './InsuranceModal';
+import { formatSafeDate } from '../../utils/dateUtils';
 
 function InsuranceTable({ insurances, onDelete, onUpdate }) {
   const [selectedInsurance, setSelectedInsurance] = React.useState(null);
@@ -108,10 +109,10 @@ function InsuranceTable({ insurances, onDelete, onUpdate }) {
                 {insurance.policyType}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                {new Date(insurance.startDate).toLocaleDateString()}
+                {formatSafeDate(insurance.startDate)}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                {new Date(insurance.endDate).toLocaleDateString()}
+                {formatSafeDate(insurance.endDate)}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 {insurance.premiumAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}

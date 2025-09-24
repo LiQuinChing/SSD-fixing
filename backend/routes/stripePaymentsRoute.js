@@ -3,6 +3,8 @@ import cors from 'cors';
 import { StripePayment } from '../models/stripePaymentModel.js';
 import { STRIPE_SECRET_KEY } from '../config.js';
 import fs from 'fs';
+import secureLogger from '../utils/secureLogger.js';
+import { catchAsync } from '../middleware/errorHandler.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 
 //Route to save a new Stripe payment - client view
-router.post('/user', async (request, response) => {
+router.post('/user', catchAsync(async (request, response) => {
     try {
         if (
             // !request.body.PaymentID ||
@@ -48,10 +50,10 @@ router.post('/user', async (request, response) => {
 
         return response.status(201).send(stripePayment);
     } catch (error) {
-        console.log(error.message);
-        response.status(500).send({ message: error.message });
+        secureLogger.error('Error creating stripe payment', error);
+        response.status(500).send({ message: 'Failed to create payment' });
     }
-});
+}));
 
 //Route to get all Stripe payments - client view
 router.get('/user', async (request, response) => {

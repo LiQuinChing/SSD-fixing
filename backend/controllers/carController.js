@@ -2,6 +2,7 @@
 // const Car = require("../models/Car");
 import {Car} from '../models/Car.js'
 import nodemailer from "nodemailer";
+import secureLogger from '../utils/secureLogger.js';
 // const nodemailer = require("nodemailer");
 
 // Create a transporter object using SMTP transport
@@ -36,7 +37,7 @@ export const getPendingRequests = async (req, res) => {
 export const createCar = async (req, res) => {
   const {VIN} = req.body;
 
-  console.log(req.body);
+  secureLogger.debug('Creating new car request', { VIN });
    // If the VIN and owner's email are unique, proceed with creating the car
 
    const {
@@ -224,9 +225,9 @@ export const deleteRequest = async (req, res) => {
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.error("Error sending email:", error);
+        secureLogger.error("Failed to send car request decline email", error);
       } else {
-        console.log("Email sent:", info.response);
+        secureLogger.info("Car request decline email sent successfully");
       }
     });
 

@@ -1,6 +1,5 @@
 import express from 'express';
 import { Record } from '../models/recordModel.js';
-import sanitizeHtml from 'sanitize-html';
 
 const router = express.Router();
 
@@ -19,16 +18,16 @@ router.post('/', async (request, response) => {
             });
         }
         const newRecord = {
-            Maintaintype: sanitizeHtml(request.body.Maintaintype),
-            VehicleID: sanitizeHtml(request.body.VehicleID),
-            Date: sanitizeHtml(request.body.Date),
-            Milage: sanitizeHtml(request.body.Milage),
-            Description: sanitizeHtml(request.body.Description),
+            Maintaintype: request.body.Maintaintype,
+            VehicleID: request.body.VehicleID,
+            Date: request.body.Date,
+            Milage: request.body.Milage,
+            Description: request.body.Description,
         };
 
         const record = await Record.create(newRecord);
 
-        return response.status(201).json(record); // Solved XSS vulnerability
+        return response.status(201).send(record);
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

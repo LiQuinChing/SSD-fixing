@@ -19,7 +19,7 @@ const FirstPage = () => {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/feedbacks`)
+      .get("${BASE_URL}/feedbacks")
       .then((response) => {
         setFeedbacks(response.data.data);
         setLoading(false);

@@ -40,7 +40,7 @@ const userSignup = () => {
             }
 
         } catch (error) {
-            return setError("Password too weak. It must be at least 8 chars, include a number and a lowercase letter");
+            message.error("Registration Failed");
         } finally {
             setLoading(false);
         }

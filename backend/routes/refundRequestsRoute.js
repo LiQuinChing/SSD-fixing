@@ -3,7 +3,6 @@ import cors from 'cors';
 import { RefundRequest } from '../models/refundRequestModel.js';
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
-import sanitizeHtml from 'sanitize-html';
 // import sendRefundEmail from '../index.js';
 
 const router = express.Router();
@@ -24,16 +23,17 @@ router.post('/user', async (request, response) => {
                 });
             }
             const newRefundRequest = {
-                BookingID: sanitizeHtml(request.body.BookingID),
-                PaymentID: sanitizeHtml(request.body.PaymentID),
-                Email: sanitizeHtml(request.body.Email),
-                Reason_for_Request: sanitizeHtml(request.body.Reason_for_Request),
+                BookingID: request.body.BookingID,
+                PaymentID: request.body.PaymentID,
+                Email: request.body.Email,
+                Reason_for_Request: request.body.Reason_for_Request,
                 Date: new Date(),
                 Status: 'Pending',
             };
 
             const refundrequest = await RefundRequest.create(newRefundRequest);
-            return response.status(201).json(refundrequest); // Solved XSS vulnerability
+            return response.status(201).send(refundrequest);
+
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

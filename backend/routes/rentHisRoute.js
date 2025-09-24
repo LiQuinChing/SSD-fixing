@@ -1,6 +1,5 @@
 import express from 'express';
 import { RentHis } from '../models/rentModel.js';
-import sanitizeHtml from 'sanitize-html';
 
 const router = express.Router();
 
@@ -21,16 +20,16 @@ router.post('/', async(request, response) => {
         }
         
         const newRent = {
-            name: sanitizeHtml(request.body.name),
-            vehicle: sanitizeHtml(request.body.vehicle),
-            rentDate: sanitizeHtml(request.body.rentDate),
-            returnDate: sanitizeHtml(request.body.returnDate),
-            mileage: sanitizeHtml(request.body.mileage),
-            amount: sanitizeHtml(request.body.amount),
+            name: request.body.name,
+            vehicle: request.body.vehicle,
+            rentDate: request.body.rentDate,
+            returnDate: request.body.returnDate,
+            mileage: request.body.mileage,
+            amount: request.body.amount,
         };
         const rentalHistory = await RentHis.create(newRent);
 
-        return response.status(201).json(rentalHistory); // Solved XSS vulnerability
+        return response.status(201).send(rentalHistory);
         
     } catch (error) {
         console.log(error.message);

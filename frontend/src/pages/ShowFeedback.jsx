@@ -29,14 +29,8 @@ const ShowFeedback = () => {
     fetchFeedback();
   }, [id]);
 
-  // Solved DOM XSS vulnerability
   const handleDownloadReport = () => {
     if (!feedback) return;
-
-    // Sanitize each field to strip out any HTML/JS
-    const safeName = DOMPurify.sanitize(feedback.name, { ALLOWED_TAGS: [] });
-    const safeEmail = DOMPurify.sanitize(feedback.email, { ALLOWED_TAGS: [] });
-    const safeDetails = DOMPurify.sanitize(feedback.details, { ALLOWED_TAGS: [] });
 
     const reportContent =
       `Feedback Details:\n\n` +
@@ -53,12 +47,9 @@ const ShowFeedback = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = "FeedbackReport.txt"; // Filename for download
-    a.style.display = "none"; // keep invisible
-
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url); // Clean up the URL object
   };
 
   if (loading) return <Spinner />; // Show spinner while loading

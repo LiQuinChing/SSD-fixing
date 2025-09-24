@@ -66,6 +66,8 @@ app.use(helmet({
     hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
 }));
 
+
+// Additional modern header (not handled by helmet): Permissions-Policy
 app.use((req, res, next) => {
     res.setHeader('Permissions-Policy', [
         'accelerometer=()',
@@ -228,14 +230,14 @@ cron.schedule('0 7 * * *', async () => {
 app.post('/licenses', upload.single('uploadLicense'), async (req, res, next) => {
     try {
         const newLicense = await LicenseRepository.addLicense({
-            vehicleNo: sanitizeHtml(req.body.vehicleNo || ""),
-            startDate: sanitizeHtml(req.body.startDate || ""),
-            endDate: sanitizeHtml(req.body.endDate || ""),
+            vehicleNo: req.body.vehicleNo,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
             uploadLicense: req.file ? req.file.path : null,
-            email: sanitizeHtml(req.body.email || ""),
-            notes: sanitizeHtml(req.body.notes || "")
+            email: req.body.email,
+            notes: req.body.notes
         });
-        res.status(201).json(newLicense); // Solved XSS vulnerability
+        res.status(201).send(newLicense);
     } catch (error) {
         secureLogger.error('Error when adding license', error);
         next(error);
@@ -255,7 +257,7 @@ app.get('/licenses', async (req, res, next) => {
 app.put('/licenses/:id', async (req, res, next) => {
     try {
         const updatedLicense = await LicenseRepository.updateLicense(req.params.id, req.body);
-        res.json(updatedLicense); // Solved XSS vulnerability
+        res.send(updatedLicense);
     } catch (error) {
         secureLogger.error('Error updating license', error);
         next(error);
@@ -265,7 +267,7 @@ app.put('/licenses/:id', async (req, res, next) => {
 app.delete('/licenses/:id', async (req, res, next) => {
     try {
         const deletedLicense = await LicenseRepository.deleteLicense(req.params.id);
-        res.json(deletedLicense); // Solved XSS vulnerability
+        res.send(deletedLicense);
     } catch (error) {
         secureLogger.error('Error deleting license', error);
         next(error);
@@ -278,19 +280,19 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res, next)
     try {
         const newInsurance = await InsuranceRepository.addInsurance({
             // include all required fields
-            vehicleNo: sanitizeHtml(req.body.vehiclenumber),
-            insuranceProvider: sanitizeHtml(req.body.insuranceProvider),
-            policyNumber: sanitizeHtml(req.body.policyNumber),
-            policyType: sanitizeHtml(req.body.policyType),
-            coverageDetails: sanitizeHtml(req.body.coverageDetails),
-            startDate: sanitizeHtml(req.body.startDate),
-            endDate: sanitizeHtml(req.body.endDate),
-            premiumAmount: sanitizeHtml(req.body.premiumAmount),
-            contactInformation: sanitizeHtml(req.body.contactInformation),
+            vehicleNo: req.body.vehiclenumber,
+            insuranceProvider: req.body.insuranceProvider,
+            policyNumber: req.body.policyNumber,
+            policyType: req.body.policyType,
+            coverageDetails: req.body.coverageDetails,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
+            premiumAmount: req.body.premiumAmount,
+            contactInformation: req.body.contactInformation,
             uploadInsurance: req.file ? req.file.path : null, // Assuming file is optional
-            email: sanitizeHtml(req.body.email),
+            email: req.body.email,
         });
-        res.status(201).json(newInsurance); // Solved XSS vulnerability
+        res.status(201).send(newInsurance);
     } catch (error) {
         secureLogger.error('Error when adding insurance', error);
         next(error);
@@ -300,7 +302,7 @@ app.post('/insurances', upload.single('uploadInsurance'), async (req, res, next)
 app.get('/insurances', async (req, res, next) => {
     try {
         const insurances = await InsuranceRepository.getAllInsurances();
-        res.json(insurances); // Solved XSS vulnerability
+        res.send(insurances);
     } catch (error) {
         secureLogger.error('Error fetching insurances', error);
         next(error);
@@ -310,7 +312,7 @@ app.get('/insurances', async (req, res, next) => {
 app.put('/insurances/:id', async (req, res, next) => {
     try {
         const updatedInsurance = await InsuranceRepository.updateInsurance(req.params.id, req.body);
-        res.json(updatedInsurance); // Solved XSS vulnerability
+        res.send(updatedInsurance);
     } catch (error) {
         secureLogger.error('Error updating insurance', error);
         next(error);
@@ -320,7 +322,7 @@ app.put('/insurances/:id', async (req, res, next) => {
 app.delete('/insurances/:id', async (req, res, next) => {
     try {
         const deletedInsurance = await InsuranceRepository.deleteInsurance(req.params.id);
-        res.json(deletedInsurance); // Solved XSS vulnerability
+        res.send(deletedInsurance);
     } catch (error) {
         secureLogger.error('Error deleting insurance', error);
         next(error);

@@ -31,10 +31,10 @@ router.post('/user', catchAsync(async (request, response) => {
         }
         const newStripePayment = {
             // PaymentID: request.body.PaymentID,
-            CardNumber: sanitizeHtml(request.body.CardNumber),
-            CVV: sanitizeHtml(request.body.CVV),
-            DateOfExpiry: sanitizeHtml(request.body.DateOfExpiry),
-            Amount: sanitizeHtml(request.body.Amount),
+            CardNumber: request.body.CardNumber,
+            CVV: request.body.CVV,
+            DateOfExpiry: request.body.DateOfExpiry,
+            Amount: request.body.Amount,
         };
 
         const stripePayment = await StripePayment.create(newStripePayment);
@@ -48,7 +48,7 @@ router.post('/user', catchAsync(async (request, response) => {
 
         //stripe - end
 
-        return response.status(201).json(stripePayment); // Solved XSS vulnerability
+        return response.status(201).send(stripePayment);
     } catch (error) {
         secureLogger.error('Error creating stripe payment', error);
         response.status(500).send({ message: 'Failed to create payment' });

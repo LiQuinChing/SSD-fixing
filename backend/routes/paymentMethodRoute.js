@@ -1,6 +1,5 @@
 import express from 'express';
 import { PaymentMethod } from '../models/paymentMethodModel.js';
-import sanitizeHtml from 'sanitize-html';
 
 const router = express.Router();
 
@@ -18,15 +17,15 @@ router.post('/user', async (request, response) => {
             });
         }
         const savePaymentMethod = {
-            PaymentMethod: sanitizeHtml(request.body.PaymentMethod),
-            CardNumber: sanitizeHtml(request.body.CardNumber),
-            CVV: sanitizeHtml(request.body.CVV),
-            DateOfExpiry: sanitizeHtml(request.body.DateOfExpiry),
+            PaymentMethod: request.body.PaymentMethod,
+            CardNumber: request.body.CardNumber,
+            CVV: request.body.CVV,
+            DateOfExpiry: request.body.DateOfExpiry,
         };
 
         const paymentMethod = await PaymentMethod.create(savePaymentMethod);
 
-        return response.status(201).json(paymentMethod); // Solved XSS vulnerability
+        return response.status(201).send(paymentMethod);
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });

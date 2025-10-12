@@ -27,10 +27,10 @@ router.post("/", async (request, response) => {
         response.status(500).send({ message: error.message });
     }
 });
-
+ 
 // Read all offers
 router.get("/", async (request, response) => {
-    try {
+    try { 
         const allOffers = await offers.find({});
         return response.status(200).json({
             count: allOffers.length,

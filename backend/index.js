@@ -6,7 +6,6 @@ import cashPaymentsRoute from './routes/cashPaymentsRoute.js';
 import paymentMethodRoute from './routes/paymentMethodRoute.js';
 import refundRequestsRoute from './routes/refundRequestsRoute.js';
 import stripePaymentsRoute from './routes/stripePaymentsRoute.js';
-import sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import offersRoutes from './routes/offersRoutes.js';
 import cors from 'cors';
@@ -82,7 +81,64 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors(corsOptions));
+// const allowedOrigins = (process.env.FRONTEND_ORIGINS || 'http://localhost:5173')
+//     .split(',')
+//     .map(s => s.replace(/\/$/, '').trim());
+
+const defaultOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',  // Added for React dev server
+    'http://127.0.0.1:3000',  // Added for React dev server
+];
+
+const envOrigins = (process.env.FRONTEND_ORIGINS || '')
+    .split(',')
+    .map(s => s.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
+
+// Host header allow-list derived from allowedOrigins (defense against LAN/DNS rebinding)
+const parseHost = (s) => {
+    try { return new URL(s).hostname; } catch { return s.replace(/^https?:\/\//, '').split(':')[0]; }
+};
+const defaultHosts = ['localhost', '127.0.0.1'];
+const envHosts = envOrigins.map(parseHost).filter(Boolean);
+const allowedHosts = Array.from(new Set([...defaultHosts, ...envHosts]));
+
+// Block requests with unexpected Host header in non-production
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        const hostHeader = (req.headers.host || '').split(':')[0];
+        if (!allowedHosts.includes(hostHeader)) {
+            console.warn('Blocked Host header:', hostHeader, 'Allowed:', allowedHosts);
+            return res.status(400).send('Invalid Host header');
+        }
+    }
+    next();
+});
+
+app.use(cors({
+    origin(origin, cb) {
+        // Allow non-browser requests or same-origin (no Origin header)
+        if (!origin) return cb(null, true);
+        // Normalize incoming origin (strip trailing slash)
+        const normalized = origin.replace(/\/$/, '');
+
+        if (allowedOrigins.includes(normalized)) {
+            return cb(null, true);
+        }
+        // Debug while testing
+        console.warn('CORS blocked origin:', normalized, 'Allowed:', allowedOrigins);
+        return cb(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true, // set true only if you use cookies/auth across origins
+    optionsSuccessStatus: 200, // For legacy browser support
+    preflightContinue: false,
+}));
 
 // Security headers specifically for Google OAuth
 app.use((req, res, next) => {
@@ -97,6 +153,34 @@ app.use((req, res, next) => {
 
     // Referrer policy that works with OAuth
     res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+    // Additional modern header: Permissions-Policy
+    res.setHeader('Permissions-Policy', [
+        'accelerometer=()',
+        'camera=()',
+        'geolocation=()',
+        'gyroscope=()',
+        'magnetometer=()',
+        'microphone=()',
+        'payment=(self)',
+        'usb=()'
+    ].join(', '));
+
+    // Add strict Content Security Policy (CSP)
+    const cspDirectives = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "script-src 'self' https://accounts.google.com https://apis.google.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob: https:",
+        `connect-src 'self' ${allowedOrigins.join(' ')} https://accounts.google.com https://apis.google.com`,
+        "font-src 'self' data:",
+        "frame-src https://accounts.google.com",
+        "upgrade-insecure-requests"
+    ].join('; ');
+    res.header('Content-Security-Policy', cspDirectives);
 
     next();
 });

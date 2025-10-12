@@ -1,0 +1,62 @@
+2-MINUTE PRESENTATION SCRIPT: SSD SECURITY VULNERABILITY FIXES
+================================================================
+
+[0:00-0:15] INTRODUCTION
+"Hello, I'm Shrinath D.V.A, index number IT22627728. Today I'll present the security vulnerabilities I fixed in our MERN stack car rental application."
+
+[0:15-0:30] VULNERABILITIES IDENTIFIED
+"I identified and fixed two critical security vulnerabilities:
+1. Content Security Policy Header Not Set - allowing arbitrary script execution
+2. Cross-Domain Misconfiguration - exposing our development server to LAN attacks and DNS rebinding"
+
+[0:30-1:00] CSP IMPLEMENTATION
+"For the CSP vulnerability, I implemented strict Content Security Policy headers across three layers:
+
+First, in our backend at index.js, I added comprehensive CSP directives:
+- default-src 'self' - only allow resources from our domain
+- script-src restricted to self and Google OAuth domains
+- style-src with unsafe-inline for CSS frameworks
+- img-src allowing data URIs and HTTPS images
+
+Second, I mirrored these headers in our Vite development server configuration.
+
+Third, I added meta CSP tags in our HTML for defense-in-depth, using SHA256 hashes for the Vite preamble script."
+
+[1:00-1:30] CROSS-DOMAIN FIXES
+"For cross-domain misconfiguration, I implemented multiple security layers:
+
+Host header validation - I created an allow-list that blocks requests with suspicious host headers in development, preventing DNS rebinding attacks.
+
+Strict CORS configuration - Origins are normalized and validated against our allow-list, with comprehensive logging for blocked requests.
+
+Localhost-only binding - The development server now binds to 127.0.0.1 instead of 0.0.0.0, preventing LAN access while maintaining production flexibility through environment variables."
+
+[1:30-1:50] VALIDATION & RESULTS
+"I validated these fixes by:
+- Checking CSP headers in browser dev tools
+- Testing inline script blocking - malicious scripts are now blocked
+- Confirming LAN inaccessibility - the app is unreachable via 192.168.* addresses
+- Verifying CORS protection - unauthorized origins are properly blocked
+
+The application maintains full functionality including Google OAuth while being significantly more secure."
+
+[1:50-2:00] CONCLUSION
+"These fixes eliminate XSS attack vectors through CSP and prevent unauthorized network access through proper CORS and host validation. Our car rental application is now protected against these critical security vulnerabilities while maintaining optimal user experience. Thank you."
+
+TIMING BREAKDOWN:
+- Introduction: 15 seconds
+- Problem Statement: 15 seconds  
+- CSP Solution: 30 seconds
+- Cross-Domain Solution: 30 seconds
+- Validation: 20 seconds
+- Conclusion: 10 seconds
+Total: 2 minutes
+
+KEY TECHNICAL TERMS TO EMPHASIZE:
+- Content Security Policy (CSP)
+- Cross-Origin Resource Sharing (CORS)
+- DNS rebinding attacks
+- Host header validation
+- Defense-in-depth
+- SHA256 hashing
+- Localhost binding

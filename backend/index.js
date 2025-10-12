@@ -118,6 +118,18 @@ app.use((req, res, next) => {
     // Referrer policy that works with OAuth
     res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
 
+    // Additional modern header: Permissions-Policy
+    res.setHeader('Permissions-Policy', [
+        'accelerometer=()',
+        'camera=()',
+        'geolocation=()',
+        'gyroscope=()',
+        'magnetometer=()',
+        'microphone=()',
+        'payment=(self)',
+        'usb=()'
+    ].join(', '));
+
     // Add strict Content Security Policy (CSP)
     const cspDirectives = [
         "default-src 'self'",

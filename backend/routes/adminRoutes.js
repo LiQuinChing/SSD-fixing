@@ -1,6 +1,6 @@
 import express from "express";
 import { adminModel } from "../models/adminModel.js";
-
+import sanitizeHtml from "sanitize-html";
 
 const router = express.Router();
 router.post('/create', async (request,response)=>{
@@ -13,12 +13,12 @@ router.post('/create', async (request,response)=>{
         }
 
         const newAdmin = {
-            email: request.body.email,
-            password: request.body.password
+            email: sanitizeHtml(request.body.email),
+            password: sanitizeHtml(request.body.password)
         }
 
         const newAdminFinal = await adminModel.create(newAdmin);
-        return response.status(201).send(newAdminFinal);
+        return response.status(201).json(newAdminFinal); // Solved XSS vulnerability
     } catch (error) {
         
     }

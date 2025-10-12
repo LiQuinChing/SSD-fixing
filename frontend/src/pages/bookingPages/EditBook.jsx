@@ -9,15 +9,7 @@ const RAW_BASE = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 const BASE_URL = (RAW_BASE || "").replace(/\/$/, "");
 
 const EditBook = () => {
-  const [customerName, setCustomerName] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [pickupDate, setPickupDate] = useState("");
-  const [pickupTime, setPickupTime] = useState("");
-  const [dropoffDate, setDropoffDate] = useState("");
-  const [dropoffTime, setDropoffTime] = useState("");
+  const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -27,16 +19,8 @@ const EditBook = () => {
     setLoading(true);
     axios
       .get(`${BASE_URL}/books/${id}`)
-      .then((response) => {
-        setCustomerName(response.data.customerName);
-        setIdNumber(response.data.idNumber);
-        setAddress(response.data.address);
-        setMobileNumber(response.data.mobileNumber);
-        setEmail(response.data.email);
-        setPickupDate(response.data.pickupDate);
-        setPickupTime(response.data.pickupTime);
-        setDropoffDate(response.data.dropoffDate);
-        setDropoffTime(response.data.dropoffTime);
+      .then(({ data }) => {
+        setBook(data ?? {});
         setLoading(false);
       })
       .catch((error) => {
@@ -46,21 +30,27 @@ const EditBook = () => {
       });
   }, []);
 
-  const handleEditBook = () => {
-    const data = {
-      customerName,
-      idNumber,
-      address,
-      mobileNumber,
-      email,
-      pickupDate,
-      pickupTime,
-      dropoffDate,
-      dropoffTime,
-    };
+  const handleInputChange = ({ target: { name, value } }) => {
+    setBook((prev) => ({
+      ...(prev ?? {}),
+      [name]: value ?? "",
+    }));
+  };
+
+  const handleSave = (event) => {
+    event.preventDefault();
+    if (!book) return;
     setLoading(true);
+    const payload = {
+      ...book,
+      Customername: (book.Customername ?? "").trim(),
+      Idnumber: (book.Idnumber ?? "").trim(),
+      Address: (book.Address ?? "").trim(),
+      mobilenumber: (book.mobilenumber ?? "").trim(),
+      Email: (book.Email ?? "").trim(),
+    };
     axios
-      .put(`${BASE_URL}/books/${id}`, data)
+      .put(`${BASE_URL}/books/${id}`, payload)
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Booking Edited successfully", { variant: "success" });
@@ -85,8 +75,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Name</label>
           <input
             type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            name="Customername"
+            value={book?.Customername ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -94,8 +85,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">ID Number</label>
           <input
             type="text"
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
+            name="Idnumber"
+            value={book?.Idnumber ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -103,8 +95,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Address</label>
           <input
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            name="Address"
+            value={book?.Address ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -112,8 +105,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Mobile Number</label>
           <input
             type="text"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
+            name="mobilenumber"
+            value={book?.mobilenumber ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -121,8 +115,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Email</label>
           <input
             type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="Email"
+            value={book?.Email ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -130,8 +125,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Pickup Date</label>
           <input
             type="text"
-            value={pickupDate}
-            onChange={(e) => setPickupDate(e.target.value)}
+            name="pickupdate"
+            value={book?.pickupdate ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -139,8 +135,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Pickup Time</label>
           <input
             type="text"
-            value={pickupTime}
-            onChange={(e) => setPickupTime(e.target.value)}
+            name="pickuptime"
+            value={book?.pickuptime ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -148,8 +145,9 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Dropoff Date</label>
           <input
             type="text"
-            value={dropoffDate}
-            onChange={(e) => setDropoffDate(e.target.value)}
+            name="dropoffdate"
+            value={book?.dropoffdate ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
@@ -157,14 +155,15 @@ const EditBook = () => {
           <label className="text-xl mr-4 text-black-500">Dropoff Time</label>
           <input
             type="text"
-            value={dropoffTime}
-            onChange={(e) => setDropoffTime(e.target.value)}
+            name="dropofftime"
+            value={book?.dropofftime ?? ""}
+            onChange={handleInputChange}
             className="border-2 border-gray-500 px-4 py-2 w-full rounded-md focus:outline-none focus:border-orange-500"
           />
         </div>
         <button
           className="px-4 py-2 bg-orange-600 rounded-lg text-white font-bold hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-none m-8 "
-          onClick={handleEditBook}
+          onClick={handleSave}
         >
           Save
         </button>

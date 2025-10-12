@@ -2,7 +2,7 @@ import express from "express";
 import { vehicleModel } from "../models/vehicleModel.js";
 import secureLogger from '../utils/secureLogger.js';
 import { catchAsync } from '../middleware/errorHandler.js';
-import sanitizeHtml from "sanitize-html";   
+//import sanitizeHtml from "sanitize-html";   
 
 const router = express.Router();
 

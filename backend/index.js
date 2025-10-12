@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import sanitizeHtml from "sanitize-html";
+//import sanitizeHtml from "sanitize-html";
 import cardPaymentsRoute from './routes/cardPaymentsRoute.js';
 import cashPaymentsRoute from './routes/cashPaymentsRoute.js';
 import paymentMethodRoute from './routes/paymentMethodRoute.js';

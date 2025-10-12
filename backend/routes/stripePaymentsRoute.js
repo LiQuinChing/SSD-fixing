@@ -5,7 +5,7 @@ import { STRIPE_SECRET_KEY } from '../config.js';
 import fs from 'fs';
 import secureLogger from '../utils/secureLogger.js';
 import { catchAsync } from '../middleware/errorHandler.js';
-import sanitizeHtml from 'sanitize-html';
+//import sanitizeHtml from 'sanitize-html';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);

@@ -3,7 +3,7 @@ import { User } from '../models/userModelNew.js';
 import createError from '../utils/appError.js';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change_me';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 //MIDDLEWARE Functions
 const authenticateUser = async (req, res, next) => {

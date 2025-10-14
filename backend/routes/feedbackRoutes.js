@@ -23,7 +23,8 @@ router.post("/", async (request, response) => {
         const feedbackResponse = await feedbacks.create (newFeedback);
         return response.status(201).json(feedbackResponse);
     } catch (error) {
-        return response.status(500).json({ message: 'Failed to create feedback' });
+        console.error(error.message);
+        return response.status(500).json({ message: error.message });
     }
 });
 
@@ -36,7 +37,8 @@ router.get("/", async (request, response) => {
             data: allFeedbacks
         });
     } catch (error) {
-        return response.status(500).json({ message: 'Failed to fetch feedbacks' });
+        console.error(error.message);
+        return response.status(500).json({ message: error.message });
     }
 });
 
@@ -54,7 +56,8 @@ router.get("/:id", async (request, response) => {
         }
         return response.status(200).json(feedback);
     } catch (error) {
-        return response.status(500).json({ message: 'Failed to fetch feedback' });
+        console.error(error.message);
+        return response.status(500).json({ message: error.message });
     }
 });
 
@@ -80,7 +83,8 @@ router.put("/:id", async (request, response) => {
 
         return response.status(200).json({ message: 'Feedback updated', data: updatedFeedback });
     } catch (error) {
-        return response.status(500).json({ message: 'Failed to update feedback' });
+        console.error(error.message);
+        return response.status(500).json({ message: error.message });
     }
 });
 
@@ -100,7 +104,8 @@ router.delete("/:id", async (request, response) => {
 
         return response.status(200).json({ message: 'Feedback deleted' });
     } catch (error) {
-        return response.status(500).json({ message: 'Failed to delete feedback' });
+        console.error(error.message);
+        return response.status(500).json({ message: error.message });
     }
 });
 

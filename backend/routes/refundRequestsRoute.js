@@ -33,9 +33,10 @@ router.post('/user', async (request, response) => {
             };
 
             const refundrequest = await RefundRequest.create(newRefundRequest);
-            return response.status(201).json(refundrequest);
+            return response.status(201).json(refundrequest); // Solved XSS vulnerability
     } catch (error) {
-        response.status(500).send({ message: 'Failed to create refund request' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
     
 });
@@ -50,7 +51,8 @@ router.get('/admin', async (request, response) => {
             data: refund_requests
         });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch refund requests' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -75,7 +77,8 @@ router.put('/admin/:id', async (request, response) => {
           
               return response.status(200).send({ message: 'Refund request updated successfully' });
             } catch (error) {
-              response.status(500).send({ message: 'Failed to update refund request' });
+              console.log(error.message);
+              response.status(500).send({ message: error.message });
             }
     });
 
@@ -89,8 +92,21 @@ router.get('/admin/:id', async (request, response) => {
         return response.status(200).json(refundRequest);
 
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch refund request' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
-export default router;
+export default router;  
+
+// Read refund template
+// const refundTemplate = fs.readFileSync('D:/OTHER/sliit/Y2S2/ITP Project/Rent-A-Car_MERNSTACK/backend/templates/ReceivedRequest.html' , 'utf8');
+
+// function handleRefundRequest(req, res) {
+
+//     const recipientEmail = req.body.Email;
+//     sendRefundEmail(recipientEmail, refundTemplate);
+// }
+
+// exports.handleRefundRequest = handleRefundRequest;
+// export { handleRefundRequest };

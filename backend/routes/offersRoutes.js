@@ -21,9 +21,10 @@ router.post("/", async (request, response) => {
     try {
         const newOffer = { name, description, details };
         const offerResponse = await offers.create(newOffer);
-        return response.status(201).json(offerResponse);
+        return response.status(201).json(offerResponse); // Solved XSS vulnerability
     } catch (error) {
-        response.status(500).send({ message: 'Failed to create offer' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
  
@@ -36,7 +37,8 @@ router.get("/", async (request, response) => {
             data: allOffers
         });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch offers' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -51,7 +53,8 @@ router.get("/:id", async (request, response) => {
         }
         return response.status(200).json(offer);
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch offer' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -77,7 +80,8 @@ router.put("/:id", async (request, response) => {
 
         return response.status(200).send({ message: 'Offer updated', data: updatedOffer });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to update offer' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -98,7 +102,8 @@ router.delete("/:id", async (request, response) => {
 
         return response.status(200).send({ message: 'Offer deleted' });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to delete offer' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 

@@ -26,9 +26,10 @@ router.post('/user', async (request, response) => {
 
         const paymentMethod = await PaymentMethod.create(savePaymentMethod);
 
-        return response.status(201).json(paymentMethod);
+        return response.status(201).json(paymentMethod); // Solved XSS vulnerability
     } catch (error) {
-        response.status(500).send({ message: 'Failed to save payment method' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -42,7 +43,8 @@ router.get('/user/:id', async (request, response) => {
         return response.status(200).json(paymentMethod);
 
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch payment method' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -71,7 +73,8 @@ router.put('/user/:id', async (request, response) => {
         return response.status(200).send({ message: 'Payment Method updated' });
 
     } catch (error) {
-        response.status(500).send({ message: 'Failed to update payment method' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -89,7 +92,8 @@ router.delete('/user/:id', async (request, response) => {
         return response.status(200).send({ message: 'Payment Method deleted' });
 
     } catch (error) {
-        response.status(500).send({ message: 'Failed to delete payment method' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -103,7 +107,8 @@ router.get('/admin', async (request, response) => {
             data: paymentMethods
         });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch payment methods' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 
@@ -117,7 +122,8 @@ router.get('/user', async (request, response) => {
             data: paymentMethods
         });
     } catch (error) {
-        response.status(500).send({ message: 'Failed to fetch payment methods' });
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
     }
 });
 

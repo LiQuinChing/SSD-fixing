@@ -30,33 +30,37 @@ const ShowFeedback = () => {
 
   // Solved DOM XSS vulnerability
   const handleDownloadReport = () => {
-    if (!feedback) return;
+  if (!feedback) return;
 
-    // Sanitize each field to strip out any HTML/JS
-    const safeName = DOMPurify.sanitize(feedback.name, { ALLOWED_TAGS: [] });
-    const safeEmail = DOMPurify.sanitize(feedback.email, { ALLOWED_TAGS: [] });
-    const safeDetails = DOMPurify.sanitize(feedback.details, { ALLOWED_TAGS: [] });
+  // Sanitize each field to strip out any HTML/JS
+  const safeName = DOMPurify.sanitize(feedback.name, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  const safeEmail = DOMPurify.sanitize(feedback.email, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  const safeDetails = DOMPurify.sanitize(feedback.details, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
 
-    const reportContent =
-      `Feedback Details:\n\n` +
-      `Name: ${feedback.name}\n` +
-      `Email: ${feedback.email}\n` +
-      `Feedback: ${feedback.details}`;
+  // Use sanitized values when constructing the report
+  const reportContent =
+    `Feedback Details:\n\n` +
+    `Name: ${safeName}\n` +
+    `Email: ${safeEmail}\n` +
+    `Feedback: ${safeDetails}`;
 
-    const blob = new Blob([reportContent], {
-      type: "text/plain;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "FeedbackReport.txt"; // Filename for download
-    a.style.display = "none"; // keep invisible
+  // Create blob safely
+  const blob = new Blob([reportContent], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
 
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url); // Clean up the URL object
-  };
+  // Create and trigger the download safely
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "FeedbackReport.txt";
+  a.rel = "noopener noreferrer"; // Prevent malicious URLs from gaining access
+  a.style.display = "none";
+
+  // Safe append and cleanup
+  (document.body || document.documentElement).appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
 
   if (loading) return <Spinner />; // Show spinner while loading
 
